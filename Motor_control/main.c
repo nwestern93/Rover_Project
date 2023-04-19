@@ -53,7 +53,40 @@ void EXTI0_1_IRQHandler(void) {
     if(GPIOA->IDR & (1 << 0)) {
         debouncer |= 0x1;
     }
-
+		/*
+		if(debouncer == 0x7FFFFFFF) {
+    switch(left_target_rpm) {
+        case 40:
+            left_target_rpm = 30;
+            break;
+        case 30:
+            left_target_rpm = 40;
+            break;
+        case 0:
+            left_target_rpm = 40;
+            break;
+        default:
+            left_target_rpm = 0;
+            break;
+        }
+    }
+		if(debouncer == 0x7FFFFFFF) {
+    switch(right_target_rpm) {
+        case 40:
+            right_target_rpm = 30;
+            break;
+        case 30:
+            right_target_rpm = 40;
+            break;
+        case 0:
+            right_target_rpm = 40;
+            break;
+        default:
+            right_target_rpm = 0;
+            break;
+        }
+    }		
+		*/
     if(debouncer == 0x7FFFFFFF) {
     switch(target_rpm) {
         case 40:
@@ -110,11 +143,16 @@ int main(int argc, char* argv[]) {
     LED_init();                             // Initialize LED's
     button_init();                          // Initialize button
 		
+		
+		//left_motor_init();
+		//right_motor_init();
     motor_init();                           // Initialize motor code
 
     while (1) {
         GPIOC->ODR ^= GPIO_ODR_9;           // Toggle green LED (heartbeat)
-        encoder_count = TIM3->CNT;
+        //left_encoder_count = TIM3->CNT;
+			  //right_encoder_count = TIM2->CNT;
+			  encoder_count = TIM3->CNT;
         HAL_Delay(128);                      // Delay 1/8 second
     }
 }
