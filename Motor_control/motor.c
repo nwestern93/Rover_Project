@@ -3,7 +3,7 @@
  * -------------------------------------------------------------------------------------------------------------
  */
 #include "motor.h"
-/*
+
 volatile int16_t left_error_integral = 0; // Integrated error signal
 volatile uint8_t left_duty_cycle = 0;    	// Output PWM duty cycle
 volatile int16_t left_target_rpm = 0;    	// Desired speed target
@@ -22,7 +22,7 @@ volatile int16_t right_error = 0;         	// Speed error signal
 volatile uint8_t right_Kp = 40;            	// Proportional gain
 volatile uint8_t right_Ki = 15;            	// Integral gain
 
-*/
+
 volatile int16_t error_integral = 0;    // Integrated error signal
 volatile uint8_t duty_cycle = 0;    	// Output PWM duty cycle
 volatile int16_t target_rpm = 0;    	// Desired speed target
@@ -33,7 +33,7 @@ volatile uint8_t Kp = 40;            	// Proportional gain
 volatile uint8_t Ki = 15;            	// Integral gain
 
 // Sets up the entire motor drive system
-/*
+
 void left_motor_init(void) {
     left_pwm_init();
     left_encoder_init();
@@ -45,7 +45,7 @@ void right_motor_init(void) {
     right_ADC_init();
 }
 
-*/
+
 
 void motor_init(void) {
     pwm_init();
@@ -53,7 +53,7 @@ void motor_init(void) {
     ADC_init();
 }
 
-/*
+
 void left_pwm_init(void) {
 	  // Set up pin PA4 for H-bridge PWM output (TIMER 14 CH1)
     GPIOA->MODER |= (1 << 9);
@@ -63,7 +63,7 @@ void left_pwm_init(void) {
     GPIOA->AFR[0] &= 0xFFF0FFFF; // clear PA4 bits,
     GPIOA->AFR[0] |= (1 << 18);
 
-    // Set up a PA5, PA6 as GPIO output pins for motor direction control
+		// Set up a PA5, PA6 as GPIO output pins for motor direction control
     GPIOA->MODER &= 0xFFFFC3FF; // clear PA5, PA6 bits,
     GPIOA->MODER |= (1 << 10) | (1 << 12);
     
@@ -88,233 +88,92 @@ void left_pwm_init(void) {
 
 }
 void right_pwm_init(void) {
-	  // Set up pin P for H-bridge PWM output (TIMER  CH )
-    GPIO->MODER |= (1 << );
-    GPIO->MODER &= ~(1 << );
+	  // Set up pin PA9 for H-bridge PWM output (TIMER1  CH2 )
+		GPIOA -> MODER &= ~((1<<19) | (1<<18));
+		GPIOA -> MODER |= (1<<19);
+	
+		GPIOA -> AFR[1] |= (1<<5);
 
-    // Set P to AF,
-    GPIO->AFR[] &= 0xFFF0FFFF; // clear PA4 bits,
-    GPIO->AFR[] |= (1 << 18);
-
-    // Set up a P, P as GPIO output pins for motor direction control
-    GPIO->MODER &= 0xFFFFC3FF; // clear PA5, PA6 bits,
-    GPIO->MODER |= (1 << ) | (1 << );
+    // Set up a PA10, PA11 as GPIO output pins for motor direction control
+    GPIOA->MODER &= ~((1<<23) | (1<<22) | (1<<21) | (1<<20)); // clear PA10, PA11 bits,
+    GPIOA->MODER |= (1 << 22) | (1 << 20);
     
     //Initialize one direction pin to high, the other low
-    GPIOA->ODR |= (1 << );
-    GPIOA->ODR &= ~(1 << );
+    GPIOA->ODR |= (1 << 10);
+    GPIOA->ODR &= ~(1 << 11);
 
     // Set up PWM timer
-    RCC->APB ENR |= RCC_APB ENR_TIM  EN;
-    TIM->CR1 = 0;                         // Clear control registers
-    TIM->CCMR1 = 0;                       // (prevents having to manually clear bits)
-    TIM->CCER = 0;
+    RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
+    TIM1->CR1 = 0;                         // Clear control registers
+    TIM1->CCMR1 = 0;                       // (prevents having to manually clear bits)
+    TIM1->CCER = 0;
 
     // Set output-compare CH1 to PWM1 mode and enable CCR1 preload buffer
-    TIM->CCMR1 |= (TIM_CCMR1_OC1M_2 | TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC1PE);
-    TIM->CCER |= TIM_CCER_CC1E;           // Enable capture-compare channel 1
-    TIM->PSC = 1;                         // Run timer on 24Mhz
-    TIM->ARR = 1200;                      // PWM at 20kHz
-    TIM->CCR1 = 0;                        // Start PWM at 0% duty cycle
-    
-    TIM->CR1 |= TIM_CR1_CEN;              // Enable timer
+    TIM1->CCMR1 |= (TIM_CCMR1_OC2M_2 | TIM_CCMR1_OC2M_1 | TIM_CCMR1_OC2PE);
+    TIM1->CCER |= TIM_CCER_CC2E;           // Enable capture-compare channel 1
+    TIM1->PSC = 1;                         // Run timer on 24Mhz
+    TIM1->ARR = 1200;                      // PWM at 20kHz
+    TIM1->CCR2 = 0;                        // Start PWM at 0% duty cycle
+    TIM1->BDTR |= TIM_BDTR_MOE;
+    TIM1->CR1 |= TIM_CR1_CEN;              // Enable timer
 
 }
 
-*/
+
 
 // Sets up the PWM and direction signals to drive the H-Bridge
 void pwm_init(void) {
-    /* Back up options to test
+
 		
-	  ******************************TEST1****************************
-		// Set up pin PA2 for H-bridge PWM output (TIMER 15 CH1)
-    GPIOA->MODER &= ~((1<<5)|(1<<4));
-    GPIOA->MODER |= ~(1<<5);
 	  
-	  // Set PA2 to AF0,
-    GPIOA->AFR[0] |= (0x00<<8);
-		****************************************************************
-		******************************TEST2****************************
-		// Set up pin PA3 for H-bridge PWM output (TIMER 15 CH2)
-    GPIOA->MODER &= ~((1<<7|(1<<6));
-    GPIOA->MODER |= ~(1<<7);
-	  
-	  // Set PA3 to AF0,
-    GPIOA->AFR[0] |= (0x00<<12);
-		****************************************************************
-		******************************TEST3****************************
-		// Set up pin PB8 for H-bridge PWM output (TIMER 16 CH1)
-    GPIOB->MODER &= ~((1<<17|(1<<16));
-    GPIOB->MODER |= ~(1<<17);
-	  
-	  // Set PB8 to AF2,
-    GPIOB->AFR[1] |= (0x02 << GPIO_AFRH_AFRH8_Pos);
-		****************************************************************	
-		******************************TEST4****************************
-		// Set up pin PB9 for H-bridge PWM output (TIMER 17 CH1)
-    GPIOB->MODER &= ~((1<<19|(1<<18));
-    GPIOB->MODER |= ~(1<<19);
-	  
-	  // Set PB8 to AF2,
-    GPIOB->AFR[1] |= (0x02 << GPIO_AFRH_AFRH9_Pos);
-		****************************************************************	
-		******************************TEST5****************************
-		// Set up pin PB0 for H-bridge PWM output (TIMER 3 CH3)
-    GPIOB->MODER &= ~((1<<1|(1<<0));
-    GPIOB->MODER |= ~(1<<1);
-	  
-	  // Set PB0 to AF1,
-    GPIOB->AFR[0] |= (0x01 << GPIO_AFRL_AFRL0_Pos);
-		****************************************************************
-		******************************TEST6****************************
-		// Set up pin PB1 for H-bridge PWM output (TIMER 3 CH4)
-    GPIOB->MODER &= ~((1<<3|(1<<2));
-    GPIOB->MODER |= ~(1<<3);
-	  
-	  // Set PB1 to AF1,
-    GPIOB->AFR[0] |= (0x01 << GPIO_AFRL_AFRL1_Pos);
-		****************************************************************
-		*/
-    // Set up pin PA4 for H-bridge PWM output (TIMER 14 CH1)
+
+		//GPIO_AFRL_AFRL8_Pos
+		
+		GPIOA -> MODER &= ~((1<<19) | (1<<18));
+		GPIOA -> MODER |= (1<<19);
+	
+		GPIOA -> AFR[1] |= (1<<5);
+		
+    /*
+		//              Original Code
+		// Set up pin PA4 for H-bridge PWM output (TIMER 14 CH1)
     GPIOA->MODER |= (1 << 9);
     GPIOA->MODER &= ~(1 << 8);
 
     // Set PA4 to AF4,
     GPIOA->AFR[0] &= 0xFFF0FFFF; // clear PA4 bits,
     GPIOA->AFR[0] |= (1 << 18);
-
-    // Set up a PA5, PA6 as GPIO output pins for motor direction control
-    GPIOA->MODER &= 0xFFFFC3FF; // clear PA5, PA6 bits,
-    GPIOA->MODER |= (1 << 10) | (1 << 12);
+		*/
+    
+		// Set up a PA5, PA6 as GPIO output pins for motor direction control
+    // Set up a PA10, PA11 as GPIO output pins for motor direction control
+    GPIOA->MODER &= ~((1<<23) | (1<<22) | (1<<21) | (1<<20)); // clear PA10, PA11 bits,
+    GPIOA->MODER |= (1 << 22) | (1 << 20);
     
     //Initialize one direction pin to high, the other low
-    GPIOA->ODR |= (1 << 5);
-    GPIOA->ODR &= ~(1 << 6);
-
+    GPIOA->ODR |= (1 << 10);
+    GPIOA->ODR &= ~(1 << 11);
+		
+		
+		//           Original code
     // Set up PWM timer
-    RCC->APB1ENR |= RCC_APB1ENR_TIM14EN;
-    TIM14->CR1 = 0;                         // Clear control registers
-    TIM14->CCMR1 = 0;                       // (prevents having to manually clear bits)
-    TIM14->CCER = 0;
+    RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
+    TIM1->CR1 = 0;                         // Clear control registers
+    TIM1->CCMR1 = 0;                       // (prevents having to manually clear bits)
+    TIM1->CCER = 0;
 
     // Set output-compare CH1 to PWM1 mode and enable CCR1 preload buffer
-    TIM14->CCMR1 |= (TIM_CCMR1_OC1M_2 | TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC1PE);
-    TIM14->CCER |= TIM_CCER_CC1E;           // Enable capture-compare channel 1
-    TIM14->PSC = 1;                         // Run timer on 24Mhz
-    TIM14->ARR = 1200;                      // PWM at 20kHz
-    TIM14->CCR1 = 0;                        // Start PWM at 0% duty cycle
-    
-    TIM14->CR1 |= TIM_CR1_CEN;              // Enable timer
-		/*
-		backup options to test
-		*******************************TEST1**********************************************
-		// Set up PWM timer
-    RCC->APB2ENR |= RCC_APB2ENR_TIM15EN;
-    TIM15->CR1 = 0;                         // Clear control registers
-    TIM15->CCMR1 = 0;                       // (prevents having to manually clear bits)
-    TIM15->CCER = 0;
-
-    // Set output-compare CH1 to PWM1 mode and enable CCR1 preload buffer
-    TIM15->CCMR1 |= (1<<6) | (1<<5) | (1<<3);
-    TIM15->CCER |= (1<<0);           // Enable capture-compare channel 1
-    TIM15->PSC = 1;                         // Run timer on 24Mhz
-    TIM15->ARR = 1200;                      // PWM at 20kHz
-    TIM15->CCR1 = 0;                        // Start PWM at 0% duty cycle
-    
-    TIM15->CR1 |= (1<<0);              // Enable timer
-		
-		**********************************************************************************
-		*******************************TEST2**********************************************
-		// Set up PWM timer
-    RCC->APB2ENR |= RCC_APB2ENR_TIM15EN;
-    TIM15->CR1 = 0;                         // Clear control registers
-    TIM15->CCMR1 = 0;                       // (prevents having to manually clear bits)
-    TIM15->CCER = 0;
-
-    // Set output-compare CH2 to PWM1 mode and enable CCR1 preload buffer
-    TIM15->CCMR1 |= (1<<14) | (1<<13) | (1<<11);
-    TIM15->CCER |= (1<<4);           // Enable capture-compare channel 1
-    TIM15->PSC = 1;                         // Run timer on 24Mhz
-    TIM15->ARR = 1200;                      // PWM at 20kHz
-    TIM15->CCR1 = 0;                        // Start PWM at 0% duty cycle
-    
-    TIM15->CR1 |= (1<<0);              // Enable timer
-		
-		**********************************************************************************		
-		*******************************TEST3**********************************************
-		// Set up PWM timer
-    RCC->APB2ENR |= RCC_APB2ENR_TIM16EN;
-    TIM16->CR1 = 0;                         // Clear control registers
-    TIM16->CCMR1 = 0;                       // (prevents having to manually clear bits)
-    TIM16->CCER = 0;
-
-    // Set output-compare CH1 to PWM1 mode and enable CCR1 preload buffer
-    TIM16->CCMR1 |= (1<<6) | (1<<5) | (1<<3);
-    TIM16->CCER |= (1<<0);           // Enable capture-compare channel 1
-    TIM16->PSC = 1;                         // Run timer on 24Mhz
-    TIM16->ARR = 1200;                      // PWM at 20kHz
-    TIM16->CCR1 = 0;                        // Start PWM at 0% duty cycle
-    
-    TIM16->CR1 |= (1<<0);              // Enable timer
-		
-		**********************************************************************************
-		*******************************TEST4**********************************************
-		// Set up PWM timer
-    RCC->APB2ENR |= RCC_APB2ENR_TIM17EN;
-    TIM17->CR1 = 0;                         // Clear control registers
-    TIM17->CCMR1 = 0;                       // (prevents having to manually clear bits)
-    TIM17->CCER = 0;
-
-    // Set output-compare CH1 to PWM1 mode and enable CCR1 preload buffer
-    TIM17->CCMR1 |= (1<<6) | (1<<5) | (1<<3);
-    TIM17->CCER |= (1<<0);           // Enable capture-compare channel 1
-    TIM17->PSC = 1;                         // Run timer on 24Mhz
-    TIM17->ARR = 1200;                      // PWM at 20kHz
-    TIM17->CCR1 = 0;                        // Start PWM at 0% duty cycle
-    
-    TIM17->CR1 |= (1<<0);              // Enable timer
-		
-		**********************************************************************************
-		*******************************TEST5**********************************************
-		// Set up PWM timer
-    RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
-    TIM3->CR1 = 0;                         // Clear control registers
-    TIM3->CCMR2 = 0;                       // (prevents having to manually clear bits)
-    TIM3->CCER = 0;
-
-    // Set output-compare CH3 to PWM1 mode and enable CCR1 preload buffer
-    TIM3->CCMR2 |= (1<<6) | (1<<5) | (1<<3);
-    TIM3->CCER |= (1<<8);           // Enable capture-compare channel 3
-    TIM3->PSC = 1;                         // Run timer on 24Mhz
-    TIM3->ARR = 1200;                      // PWM at 20kHz
-    TIM3->CCR1 = 0;                        // Start PWM at 0% duty cycle
-    
-    TIM3->CR1 |= (1<<0);              // Enable timer
-		
-		**********************************************************************************
-		*******************************TEST6**********************************************
-		// Set up PWM timer
-    RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
-    TIM3->CR1 = 0;                         // Clear control registers
-    TIM3->CCMR2 = 0;                       // (prevents having to manually clear bits)
-    TIM3->CCER = 0;
-
-    // Set output-compare CH4 to PWM1 mode and enable CCR1 preload buffer
-    TIM3->CCMR2 |= (1<<14) | (1<<13) | (1<<11);
-    TIM3->CCER |= (1<<12);           // Enable capture-compare channel 4
-    TIM3->PSC = 1;                         // Run timer on 24Mhz
-    TIM3->ARR = 1200;                      // PWM at 20kHz
-    TIM3->CCR1 = 0;                        // Start PWM at 0% duty cycle
-    
-    TIM3->CR1 |= (1<<0);              // Enable timer
-		
-		**********************************************************************************
-*/
+    TIM1->CCMR1 |= (TIM_CCMR1_OC2M_2 | TIM_CCMR1_OC2M_1 | TIM_CCMR1_OC2PE);
+    TIM1->CCER |= TIM_CCER_CC2E;           // Enable capture-compare channel 1
+    TIM1->PSC = 1;                         // Run timer on 24Mhz
+    TIM1->ARR = 1200;                      // PWM at 20kHz
+    TIM1->CCR2 = 0;                        // Start PWM at 0% duty cycle
+    TIM1->BDTR |= TIM_BDTR_MOE;
+    TIM1->CR1 |= TIM_CR1_CEN;              // Enable timer
 
 }
 
-/*
+
 void left_pwm_setDutyCycle(uint8_t left_duty) {
     
 		if(left_duty <= 100) {
@@ -322,66 +181,29 @@ void left_pwm_setDutyCycle(uint8_t left_duty) {
         // (CCR1 == "pulse" parameter in PWM struct used by peripheral library)
     }
 }
+
 void right_pwm_setDutyCycle(uint8_t right_duty) {
-			if(right_duty <= 100) {
-        TIMx->CCRx = ((uint32_t)right_duty*TIMx->ARR)/100;  // Use linear transform to produce CCR1 value
+		if(right_duty <= 100) {
+        TIM1->CCR2 = ((uint32_t)right_duty*TIM1->ARR)/100;  // Use linear transform to produce CCR2 value
+        // (CCR2 == "pulse" parameter in PWM struct used by peripheral library)
     }
 }
 
-*/
+
 
 
 // Set the duty cycle of the PWM, accepts (0-100)
 void pwm_setDutyCycle(uint8_t duty) {
-    
+      
+	  //Original Code
 		if(duty <= 100) {
-        TIM14->CCR1 = ((uint32_t)duty*TIM14->ARR)/100;  // Use linear transform to produce CCR1 value
-        // (CCR1 == "pulse" parameter in PWM struct used by peripheral library)
+        TIM1->CCR2 = ((uint32_t)duty*TIM1->ARR)/100;  // Use linear transform to produce CCR2 value
+        // (CCR2 == "pulse" parameter in PWM struct used by peripheral library)
     }
-		/*Back up options to test
-		***********************************TEST1************************************************
-		if(duty <= 100) {
-        TIM15->CCR1 = ((uint32_t)duty*TIM15->ARR)/100;  // Use linear transform to produce CCR1 value
-        // (CCR1 == "pulse" parameter in PWM struct used by peripheral library)
-    }
-		*****************************************************************************************
-				***********************************TEST2************************************************
-		if(duty <= 100) {
-        TIM15->CCR1 = ((uint32_t)duty*TIM15->ARR)/100;  // Use linear transform to produce CCR1 value
-        // (CCR1 == "pulse" parameter in PWM struct used by peripheral library)
-    }
-		*****************************************************************************************
-		***********************************TEST3************************************************
-		if(duty <= 100) {
-        TIM16->CCR1 = ((uint32_t)duty*TIM16->ARR)/100;  // Use linear transform to produce CCR1 value
-        // (CCR1 == "pulse" parameter in PWM struct used by peripheral library)
-    }
-		*****************************************************************************************		
-		***********************************TEST4************************************************
-		if(duty <= 100) {
-        TIM17->CCR1 = ((uint32_t)duty*TIM17->ARR)/100;  // Use linear transform to produce CCR1 value
-        // (CCR1 == "pulse" parameter in PWM struct used by peripheral library)
-    }
-		*****************************************************************************************				
-		***********************************TEST5************************************************
-		if(duty <= 100) {
-        TIM3->CCR2 = ((uint32_t)duty*TIM17->ARR)/100;  // Use linear transform to produce CCR1 value
-        // (CCR1 == "pulse" parameter in PWM struct used by peripheral library)
-    }
-		*****************************************************************************************		
-		***********************************TEST6************************************************
-		if(duty <= 100) {
-        TIM3->CCR2 = ((uint32_t)duty*TIM17->ARR)/100;  // Use linear transform to produce CCR1 value
-        // (CCR1 == "pulse" parameter in PWM struct used by peripheral library)
-    }
-		*****************************************************************************************	
-*/
-		
-
 
 }
 
-/*
+
 // Sets up encoder interface to read motor speed
 void left_encoder_init(void) {
     
@@ -425,13 +247,16 @@ void left_encoder_init(void) {
 
 void right_encoder_init(void) {
     
-    // Set up encoder input pins (TIMER 2 CH1 and CH2)
-    RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+// Set up encoder input pins (TIMER 2 CH1 and CH2)
+    RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
 
-    GPIOA->MODER &= ~(GPIO_MODER_MODER0_0 | GPIO_MODER_MODER1_0);
-    GPIOB->MODER |= (GPIO_MODER_MODER0_1 | GPIO_MODER_MODER1_1);
-    GPIOB->AFR[0] |= ( (1 << 5) | (1 << 1) );
-
+    GPIOA->MODER &= ~((1<<11)| (1<<10));
+    GPIOA->MODER |= (1<<11) | (1<<1);
+    GPIOB->MODER &= ~((1<<7) |(1<<6));
+		GPIOB->MODER |= 1<<7;
+		GPIOA->AFR[0] |= (1 << 21) | (1 << 1);
+		GPIOB->AFR[0] |= (1<<13);
+	
     // Set up encoder interface (TIM3 encoder input mode)
     RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
     TIM2->CCMR1 = 0;
@@ -447,7 +272,7 @@ void right_encoder_init(void) {
     //  just another option, the mid-bias is a bit simpler to understand though.)
     TIM2->CR1 |= TIM_CR1_CEN;                               // Enable timer
 
-    // Configure a second timer (TIM7) to fire an ISR on update event
+    // Configure a second timer (TIM6) to fire an ISR on update event
     // Used to periodically check and update speed variable
     RCC->APB1ENR |= RCC_APB1ENR_TIM7EN;
     
@@ -459,56 +284,42 @@ void right_encoder_init(void) {
     TIM7->DIER |= TIM_DIER_UIE;             // Enable update event interrupt
     TIM7->CR1 |= TIM_CR1_CEN;               // Enable Timer
 
-    NVIC_EnableIRQ(TIM7_DAC_IRQn);          // Enable interrupt in NVIC
-    NVIC_SetPriority(TIM7_DAC_IRQn,2);
+    NVIC_EnableIRQ(TIM7_IRQn);          // Enable interrupt in NVIC
+    NVIC_SetPriority(TIM7_IRQn,2);
 }
 
-*/
+
 
 
 // Sets up encoder interface to read motor speed
 void encoder_init(void) {
     
-    // Set up encoder input pins (TIMER 3 CH1 and CH2)
+    // Set up encoder input pins (TIMER 2 CH1 and CH2)
     RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
 
-    GPIOB->MODER &= ~(GPIO_MODER_MODER4_0 | GPIO_MODER_MODER5_0);
-    GPIOB->MODER |= (GPIO_MODER_MODER4_1 | GPIO_MODER_MODER5_1);
-    GPIOB->AFR[0] |= ( (1 << 16) | (1 << 20) );
-
+    GPIOA->MODER &= ~((1<<11)| (1<<10));
+    GPIOA->MODER |= (1<<11) | (1<<1);
+    GPIOB->MODER &= ~((1<<7) |(1<<6));
+		GPIOB->MODER |= 1<<7;
+		GPIOA->AFR[0] |= (1 << 21) | (1 << 1);
+		GPIOB->AFR[0] |= (1<<13);
+	
     // Set up encoder interface (TIM3 encoder input mode)
-    RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
-    TIM3->CCMR1 = 0;
-    TIM3->CCER = 0;
-    TIM3->SMCR = 0;
-    TIM3->CR1 = 0;
+    RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
+    TIM2->CCMR1 = 0;
+    TIM2->CCER = 0;
+    TIM2->SMCR = 0;
+    TIM2->CR1 = 0;
 
-    TIM3->CCMR1 |= (TIM_CCMR1_CC1S_0 | TIM_CCMR1_CC2S_0);   // TI1FP1 and TI2FP2 signals connected to CH1 and CH2
-    TIM3->SMCR |= (TIM_SMCR_SMS_1 | TIM_SMCR_SMS_0);        // Capture encoder on both rising and falling edges
-    TIM3->ARR = 0xFFFF;                                     // Set ARR to top of timer (longest possible period)
-    TIM3->CNT = 0x7FFF;                                     // Bias at midpoint to allow for negative rotation
+    TIM2->CCMR1 |= (TIM_CCMR1_CC1S_0 | TIM_CCMR1_CC2S_0);   // TI1FP1 and TI2FP2 signals connected to CH1 and CH2
+    TIM2->SMCR |= (TIM_SMCR_SMS_1 | TIM_SMCR_SMS_0);        // Capture encoder on both rising and falling edges
+    TIM2->ARR = 0xFFFF;                                     // Set ARR to top of timer (longest possible period)
+    TIM2->CNT = 0x7FFF;                                     // Bias at midpoint to allow for negative rotation
     // (Could also cast unsigned register to signed number to get negative numbers if it rotates backwards past zero
     //  just another option, the mid-bias is a bit simpler to understand though.)
-    TIM3->CR1 |= TIM_CR1_CEN;                               // Enable timer
+    TIM2->CR1 |= TIM_CR1_CEN;                               // Enable timer
 
     // Configure a second timer (TIM6) to fire an ISR on update event
-    // Used to periodically check and update speed variable
-    RCC->APB1ENR |= RCC_APB1ENR_TIM6EN;
-    
-    // Select PSC and ARR values that give an appropriate interrupt rate
-    //updated 03/29/23
-		TIM6->PSC = 7;
-    TIM6->ARR = 37500;
-    
-    TIM6->DIER |= TIM_DIER_UIE;             // Enable update event interrupt
-    TIM6->CR1 |= TIM_CR1_CEN;               // Enable Timer
-
-    NVIC_EnableIRQ(TIM6_DAC_IRQn);          // Enable interrupt in NVIC
-    NVIC_SetPriority(TIM6_DAC_IRQn,2);
-		
-		//*******************************************Second Motor Option********************************/
-		/*
-		// Configure a second timer (TIM7) to fire an ISR on update event
     // Used to periodically check and update speed variable
     RCC->APB1ENR |= RCC_APB1ENR_TIM7EN;
     
@@ -520,16 +331,15 @@ void encoder_init(void) {
     TIM7->DIER |= TIM_DIER_UIE;             // Enable update event interrupt
     TIM7->CR1 |= TIM_CR1_CEN;               // Enable Timer
 
-    NVIC_EnableIRQ(TIM7_DAC_IRQn);          // Enable interrupt in NVIC
-    NVIC_SetPriority(TIM7_DAC_IRQn,2);
-		
-		*/
+    NVIC_EnableIRQ(TIM7_IRQn);          // Enable interrupt in NVIC
+    NVIC_SetPriority(TIM7_IRQn,2);
+	
 }
 
 
 
 // Encoder interrupt to calculate motor speed, also manages PI controller
-/* left Motor 
+// left Motor 
 void TIM6_DAC_IRQHandler(void) {
     // Calculate the motor speed in raw encoder counts
      // Note the motor speed is signed! Motor can be run in reverse.
@@ -539,16 +349,18 @@ void TIM6_DAC_IRQHandler(void) {
     TIM3->CNT = 0x7FFF; // Reset back to center point
     
     // Call the PI update function
-    right_PI_update();
+    left_PI_update();
 
     TIM6->SR &= ~TIM_SR_UIF;        // Acknowledge the interrupt
 }
-/* Right Motor 
-void TIM7_DAC_IRQHandler(void) {
-    // Calculate the motor speed in raw encoder counts
-     // Note the motor speed is signed! Motor can be run in reverse.
-     // Speed is measured by how far the counter moved from center point
-     //
+
+// Right Motor 
+
+void TIM7_IRQHandler(void) {
+    /* Calculate the motor speed in raw encoder counts
+     * Note the motor speed is signed! Motor can be run in reverse.
+     * Speed is measured by how far the counter moved from center point
+     */
     right_motor_speed = (TIM2->CNT - 0x7FFF);
     TIM2->CNT = 0x7FFF; // Reset back to center point
     
@@ -558,24 +370,9 @@ void TIM7_DAC_IRQHandler(void) {
     TIM7->SR &= ~TIM_SR_UIF;        // Acknowledge the interrupt
 }
 
-*/
-void TIM6_DAC_IRQHandler(void) {
-    /* Calculate the motor speed in raw encoder counts
-     * Note the motor speed is signed! Motor can be run in reverse.
-     * Speed is measured by how far the counter moved from center point
-     */
-    motor_speed = (TIM3->CNT - 0x7FFF);
-    TIM3->CNT = 0x7FFF; // Reset back to center point
-    
-    // Call the PI update function
-    PI_update();
-
-    TIM6->SR &= ~TIM_SR_UIF;        // Acknowledge the interrupt
-}
 
 
 
-/*
 void left_ADC_init(void) {
 
     // Configure PA1 for ADC input (used for current monitoring)
@@ -618,7 +415,7 @@ void right_ADC_init(void) {
 }
 
 
-*/
+
 
 void ADC_init(void) {
 
@@ -641,7 +438,7 @@ void ADC_init(void) {
     ADC1->CR |= ADC_CR_ADSTART;             // Signal conversion start
 }
 
-/*
+
 
 void left_PI_update(void) {
        
@@ -676,7 +473,7 @@ void left_PI_update(void) {
 			left_output = 100;
 		 }
 		 else {
-			left_output = output;
+			left_output = left_output;
 		 }
     
     left_pwm_setDutyCycle(left_output);
@@ -718,11 +515,11 @@ void right_PI_update(void) {
 		 if(right_output < 0) {
 			right_output = 0;
 		 }
-		 else if(left_output > 100) {
+		 else if(right_output > 100) {
 			right_output = 100;
 		 }
 		 else {
-			right_output = output;
+			right_output = right_output;
 		 }
     
     right_pwm_setDutyCycle(right_output);
@@ -734,7 +531,7 @@ void right_PI_update(void) {
         right_adc_value = ADC1->DR;       // Read the motor current for debug viewing
     }
 	}
-*/
+
 
 
 void PI_update(void) {
@@ -789,7 +586,6 @@ void PI_update(void) {
     /// TODO: Calculate proportional portion, add integral and write to "output" variable
     
 		//modified 03/29/23
-		volatile int16_t proportional_value = 0; // Proportional error
 		
     int16_t output = (Kp*error) + error_integral; // Change this!
     

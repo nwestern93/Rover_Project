@@ -89,14 +89,14 @@ void EXTI0_1_IRQHandler(void) {
 		*/
     if(debouncer == 0x7FFFFFFF) {
     switch(target_rpm) {
-        case 40:
+        case 75:
             target_rpm = 30;
             break;
         case 30:
-            target_rpm = 40;
+            target_rpm = 75;
             break;
         case 0:
-            target_rpm = 40;
+            target_rpm = 75;
             break;
         default:
             target_rpm = 0;
@@ -113,9 +113,11 @@ void EXTI0_1_IRQHandler(void) {
  * -------------------------------------------------------------------------------------------------------------
  */
 volatile uint32_t encoder_count = 0;
-
+volatile uint32_t left_encoder_count = 0;
+volatile uint32_t right_encoder_count = 0;
 int main(int argc, char* argv[]) {
-		RCC -> APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN; 
+		//RCC->AHBENR |= RCC_AHBENR_GPIOBEN; 
+	  RCC -> APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN; 
 		
 	  //Connecting PA0 to EXTI0
 	  SYSCFG -> EXTICR[0] &= ~(SYSCFG_EXTICR1_EXTI0_PA);
@@ -144,15 +146,15 @@ int main(int argc, char* argv[]) {
     button_init();                          // Initialize button
 		
 		
-		//left_motor_init();
-		//right_motor_init();
-    motor_init();                           // Initialize motor code
+		left_motor_init();
+		right_motor_init();
+    //motor_init();                           // Initialize motor code
 
     while (1) {
         GPIOC->ODR ^= GPIO_ODR_9;           // Toggle green LED (heartbeat)
-        //left_encoder_count = TIM3->CNT;
-			  //right_encoder_count = TIM2->CNT;
-			  encoder_count = TIM3->CNT;
+        left_encoder_count = TIM3->CNT;
+			  right_encoder_count = TIM2->CNT;
+			  //encoder_count = TIM2->CNT;
         HAL_Delay(128);                      // Delay 1/8 second
     }
 }
