@@ -49,21 +49,22 @@ void EXTI0_1_IRQHandler(void) {
     // Remember that this function is called by the SysTick interrupt
     // You can't call any functions in here that use delay
 
-    debouncer = (debouncer << 1);
+    debouncer = (left_debouncer << 1);
+		
     if(GPIOA->IDR & (1 << 0)) {
         debouncer |= 0x1;
     }
-		/*
+		
 		if(debouncer == 0x7FFFFFFF) {
     switch(left_target_rpm) {
-        case 40:
-            left_target_rpm = 30;
+        case 75:
+            left_target_rpm = 50;
             break;
-        case 30:
-            left_target_rpm = 40;
+        case 50:
+            left_target_rpm = 75;
             break;
         case 0:
-            left_target_rpm = 40;
+            left_target_rpm = 75;
             break;
         default:
             left_target_rpm = 0;
@@ -72,37 +73,20 @@ void EXTI0_1_IRQHandler(void) {
     }
 		if(debouncer == 0x7FFFFFFF) {
     switch(right_target_rpm) {
-        case 40:
-            right_target_rpm = 30;
+        case 75:
+            right_target_rpm = 50;
             break;
-        case 30:
-            right_target_rpm = 40;
+        case 50:
+            right_target_rpm = 75;
             break;
         case 0:
-            right_target_rpm = 40;
+            right_target_rpm = 75;
             break;
         default:
             right_target_rpm = 0;
             break;
         }
     }		
-		*/
-    if(debouncer == 0x7FFFFFFF) {
-    switch(target_rpm) {
-        case 75:
-            target_rpm = 30;
-            break;
-        case 30:
-            target_rpm = 75;
-            break;
-        case 0:
-            target_rpm = 75;
-            break;
-        default:
-            target_rpm = 0;
-            break;
-        }
-    }
 }
 
 /* -------------------------------------------------------------------------------------------------------------
@@ -135,7 +119,7 @@ int main(int argc, char* argv[]) {
 	
 		//EXTI interrupt
 	  NVIC_EnableIRQ(EXTI0_1_IRQn);
-	  NVIC_SetPriority(EXTI0_1_IRQn, 3);
+	  NVIC_SetPriority(EXTI0_1_IRQn, 2);
 	
 	  ////SysTick priority
 	  //NVIC_SetPriority(SysTick_IRQn, 2);
@@ -148,13 +132,12 @@ int main(int argc, char* argv[]) {
 		
 		left_motor_init();
 		right_motor_init();
-    //motor_init();                           // Initialize motor code
+                              // Initialize motor code
 
     while (1) {
         GPIOC->ODR ^= GPIO_ODR_9;           // Toggle green LED (heartbeat)
         left_encoder_count = TIM3->CNT;
 			  right_encoder_count = TIM2->CNT;
-			  //encoder_count = TIM2->CNT;
         HAL_Delay(128);                      // Delay 1/8 second
     }
 }
