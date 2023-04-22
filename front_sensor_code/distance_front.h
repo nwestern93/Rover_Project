@@ -63,3 +63,7 @@ uint8_t receive_char(void);
 void GetFrontDistance(void);
 
 
+void init_usart3(void);
+
+
+void transmit_message(char* message);
