@@ -120,10 +120,7 @@ int main(int argc, char* argv[]) {
 		//EXTI interrupt
 	  NVIC_EnableIRQ(EXTI0_1_IRQn);
 	  NVIC_SetPriority(EXTI0_1_IRQn, 2);
-	
-	  ////SysTick priority
-	  //NVIC_SetPriority(SysTick_IRQn, 2);
-	
+
 	  debouncer = 0;                          // Initialize global variables
 		HAL_Init();															// Initialize HAL
     LED_init();                             // Initialize LED's
@@ -139,7 +136,27 @@ int main(int argc, char* argv[]) {
         left_encoder_count = TIM3->CNT;
 			  right_encoder_count = TIM2->CNT;
         HAL_Delay(128);                      // Delay 1/8 second
-    }
+			  if(USART3 -> ISR & USART_ISR_RXNE) {
+					char letter = USART3 -> RDR;
+					if(letter == 'w') {	
+						straight();
+					}
+					else if(letter == 'a') {
+						turn_left();
+					}
+					else if(letter == 's') {
+						stop();
+					}
+					else if(letter == 'd') {
+						turn_right();
+					}			
+					else {
+						right_target_rpm = right_target_rpm;
+						left_target_rpm = left_target_rpm;
+					}
+				}
+		
+		}
 }
 
 // ----------------------------------------------------------------------------
