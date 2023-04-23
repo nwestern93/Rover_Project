@@ -61,4 +61,17 @@ void right_encoder_init(void);
 void left_ADC_init(void);
 void right_ADC_init(void);
 
+//Briefly turns on right motor and turns off left motor to turn left then stops to reevaluate
+void right_turn(void);
+
+//Briefly turns on left motor and turns off right motor to turn right then stops to reevaluate
+void left_turn(void);
+
+//Continues straight at a constant speed until told to do otherwise
+void straight(void);
+
+//Brings both motors to a halt
+void stop(void);
+
+
 #endif /* MOTOR_H_ */

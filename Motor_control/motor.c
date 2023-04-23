@@ -24,7 +24,6 @@ volatile uint8_t right_Ki = 15;            	// Integral gain
 
 
 // Sets up the entire motor drive system
-
 void left_motor_init(void) {
     left_pwm_init();
     left_encoder_init();
@@ -371,4 +370,32 @@ void right_PI_update(void) {
     if(ADC1->ISR & ADC_ISR_EOC) {   // If the ADC has new data for us
         right_adc_value = ADC1->DR;       // Read the motor current for debug viewing
     }
-	}
+}
+
+//Briefly turns on right motor and turns off left motor to turn left then stops to reevaluate
+void turn_right(void) {
+	left_target_rpm = 75;
+	right_target_rpm = 0;
+	HAL_Delay(50);
+	stop();
+}
+
+//Briefly turns on left motor and turns off right motor to turn right then stops to reevaluate 
+void turn_left(void) {
+	left_target_rpm = 0;
+	right_target_rpm = 75;
+	HAL_Delay(50);
+	stop();
+}
+
+//Continues straight at a constant speed until told to do otherwise
+void straight(void) {
+	left_target_rpm = 75;
+	right_target_rpm = 75;
+}
+
+//Brings both motors to a halt
+void stop(void) {
+	left_target_rpm = 0;
+	right_target_rpm = 0;
+}
