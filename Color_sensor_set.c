@@ -52,7 +52,7 @@ int main(void)
   RCC->AHBENR |= RCC_AHBENR_GPIOBEN; // GPIOB
   GPIOB->MODER |= 0x18800000; // 11, 13 alternate function, 14 Output
   GPIOB->OTYPER |= 0x2800; // Open-drain on 11 and 13 
-  GPIOB->AFR[1] |= (0x01 << GPIO_AFRH_AFSEL11_Pos) | (0x05 << GPIO_AFRH_AFSEL13_Pos); // 11 AF1 - set as SDL , 13 AF5 - set as SCL
+  GPIOB->AFR[1] |= (0x01 << GPIO_AFRH_AFSEL11_Pos) | (0x05 << GPIO_AFRH_AFSEL13_Pos); // PB11 AF1 - set as SDA , PB13 AF5 - set as SCL
   GPIOC->MODER |= 0x55001; // pin 0 output, LED on pin 6,7,8,9 output
   
   // Initialize I2C
