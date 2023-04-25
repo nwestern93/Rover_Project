@@ -13,14 +13,14 @@ int main(void)
 		RCC->AHBENR |= RCC_APB2ENR_ADC1EN;//enable ADC1 in RCC
 		RCC->AHBENR |= RCC_AHBENR_GPIOCEN;//enable LED clock
 		//RCC->AHBENR |= RCC_AHBENR_GPIOAEN;//enable DAC clock?
-  	GPIOC->MODER |= (3 << 0);//PC0 = ADC input to analog, no pull up/down (?default)
+  	        GPIOC->MODER |= (3 << 0);//PC0 = ADC input to analog, no pull up/down (?default)
 		GPIOC->MODER |= (1 << 12) | (1 << 14) | (1 << 16) | (1 << 18);	//sets LED pins PC6-9  to General Purpose Output for ADC
-	  MX_ADC_Init(); //Initialize ADC. PC0 = ADC input (potentiometer middle pin, others to GND and 3V)
+	        MX_ADC_Init(); //Initialize ADC. PC0 = ADC input (sensor middle pin, others to GND and 3V)
 	 
-	  // ADC Calibration
+	        // ADC Calibration
 		ADC1->CR |= ADC_CR_ADDIS; //Set ADEN = 0;
 		//while ((ADC1->CR & ADC_CR_ADEN) != 0) {}
-	  ADC1->CFGR1 &= ~ADC_CFGR1_DMAEN; // Set DMAEN = 0
+	        ADC1->CFGR1 &= ~ADC_CFGR1_DMAEN; // Set DMAEN = 0
 		ADC1->CR |= ADC_CR_ADCAL; //Set ACAL = 1
 		while ((ADC1->CR & ADC_CR_ADCAL) != 0){} //Wait until ADCAL=0
 		ADC1->CR |= ADC_CR_ADEN; //Enable ADC
@@ -28,9 +28,7 @@ int main(void)
 		ADC1->CFGR1 |= ADC_CFGR1_CONT; //set ADC1 to continuous sampling, redundant with MX_ADC_Init()
 		HAL_ADC_Start(&hadc);  //START ADC CONVERSION
 
-		// Sine Wave: 8-bit, 32 samples/cycle
-		const uint8_t sine_table[32] = {127,151,175,197,216,232,244,251,254,251,244,232,216,197,175,151,127,102,78,56,37,21,9,2,0,2,9,21,37,56,78,102};	
-			uint8_t i = 0;
+		
 		while (1)
 		{
 				if (ADC1->DR > 130) {GPIOC->ODR = (1 << 6);}//threshold of first LED 
