@@ -12,9 +12,7 @@ int main(void)
 		SystemClock_Config();
 		RCC->AHBENR |= RCC_APB2ENR_ADC1EN;//enable ADC1 in RCC
 		RCC->AHBENR |= RCC_AHBENR_GPIOCEN;//enable LED clock
-		//RCC->AHBENR |= RCC_AHBENR_GPIOAEN;//enable DAC clock?
-  	        GPIOC->MODER |= (3 << 0);//PC0 = ADC input to analog, no pull up/down (?default)
-		GPIOC->MODER |= (1 << 12) | (1 << 14) | (1 << 16) | (1 << 18);	//sets LED pins PC6-9  to General Purpose Output for ADC
+		GPIOC->MODER |= (3 << 0);//PC0 = ADC input to analog, no pull up/down (?default)
 	        MX_ADC_Init(); //Initialize ADC. PC0 = ADC input (sensor PIN 1). Connect sensor PIN 2 (middle) = GND, PIN 3 (VCC) to 3 or 5V.
 	 
 	        // ADC Calibration
@@ -33,9 +31,7 @@ int main(void)
 		{
 				if (ADC1->DR > 130) {target_rpm = 100);}  //left_target_rpm or right_target_rpm depending on sensor side
 				else if (ADC1->DR <= 130) {target_rpm = 50);} //left_target_rpm or right_target_rpm
-				else if (ADC1->DR > 173) {target_rpm = 0;} //left_target_rpm or right_target_rpm
-				
-				
+				else if (ADC1->DR > 173) {target_rpm = 0;} //left_target_rpm or right_target_rpm				
 												
 		}
   
