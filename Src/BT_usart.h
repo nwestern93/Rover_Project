@@ -28,4 +28,4 @@ void BT_usart_transmit_message(char* message);
 	INPUTS: Char array
 	OUTPUTS: None 
 */
-char* Itoa(int value, char* str, int radix);
+char* itoa(int value, char* str, int radix);

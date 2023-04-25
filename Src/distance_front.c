@@ -184,9 +184,21 @@ void GetFrontDistance(void){
 	else {
 		GPIOC -> ODR &= ~((1<<9)|(1<<8)|(1<<7)|(1<<6));
 	}
-	
-	
-	
-
 }	
+	
+uint16_t Sonar_GetDistance(void){
+	uint16_t dist = 0;
+	
+  transmit(0x55);
+	
+	bytes[0] = receive_char();
+	bytes[1] = receive_char();
+
+	
+	dist = (bytes[1]<<8) | bytes[0];
+	return dist;
+
+}
+	
+		
 

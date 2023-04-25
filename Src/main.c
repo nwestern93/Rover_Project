@@ -20,7 +20,8 @@
 #include "main.h"
 #include "distance_front.h"
 #include "BT_usart.h"
-
+#include "color_sensor_set.h"
+#include "i3g_IR.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -42,13 +43,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-I2C_HandleTypeDef hi2c2;
-
-SPI_HandleTypeDef hspi2;
-
-TSC_HandleTypeDef htsc;
-
-PCD_HandleTypeDef hpcd_USB_FS;
+ADC_HandleTypeDef hadc;
 
 /* USER CODE BEGIN PV */
 
@@ -57,10 +52,7 @@ PCD_HandleTypeDef hpcd_USB_FS;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_I2C2_Init(void);
-static void MX_SPI2_Init(void);
-static void MX_TSC_Init(void);
-static void MX_USB_PCD_Init(void);
+static void MX_ADC_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -70,12 +62,6 @@ static void MX_USB_PCD_Init(void);
 
 /* USER CODE END 0 */
 
-/**
-  * @brief  The application entry point.
-  * @retval int
-  */
-	
-	
 void LED_Init(void){
 	RCC -> AHBENR |= RCC_AHBENR_GPIOCEN;
 	//Configuring red, blue, orange, and green LEDs to Output mode
@@ -90,7 +76,11 @@ void LED_Init(void){
 
 
 }
-	
+
+/**
+  * @brief  The application entry point.
+  * @retval int
+  */
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -101,66 +91,86 @@ int main(void)
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
-	
+
   /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_ADC_Init();
+  /* USER CODE BEGIN 2 */
 	USART3_Init();
 	BT_usart_init();
 	LED_Init();
-  /* USER CODE BEGIN 2 */
-
+  color_sensor_init();
+	
+	HAL_ADC_Start(&hadc);
+	
   /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-	char* message = "start";
+	char* message_start = "start";
+	char* message_errror = "Error";
+	char* message_newCMD = "New Command:";
 	char* newline = "\n";
-	BT_usart_transmit_message(message);
+	BT_usart_transmit_message(message_start);
 	BT_usart_transmit_message(newline);
 	int dist = 0;
 	uint8_t bytes[2];
 	char buffer[20];
-	char* distStr = "";
+	char* Str = "";
 	
 	int a = 1253; 
+	int opCode = 0;
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
   while (1)
   {
+    /* USER CODE END WHILE */
+		BT_usart_transmit_message(message_newCMD);
+		BT_usart_transmit_message(newline);
 		
 		
-		//distStr = Itoa(a, buffer, 10);
-		//BT_usart_transmit_message(distStr);
+		opCode = BT_usart_receive_char();
+		
+		if (opCode == '1'){ // Sonar Distance Sensor
+			int distraw=0;
+			distraw = Sonar_GetDistance();
+			Str = itoa(distraw, buffer, 10);
+			BT_usart_transmit_message(Str);
+			BT_usart_transmit_message(newline);
+			
+		} else if (opCode == '2'){  // Color sensor 
+			int colorRaw=0;
+			colorRaw = getColor();
+			Str = itoa(colorRaw, buffer, 10);
+			BT_usart_transmit_message(Str);
+			BT_usart_transmit_message(newline);
+		
+		} else if (opCode == '3'){	//Ir sensor 1
+			int distraw=0;
+			distraw = ir_1_getDist();
+			Str = itoa(distraw, buffer, 10);
+			BT_usart_transmit_message("Left: ");
+			BT_usart_transmit_message(Str);
+			BT_usart_transmit_message(newline);
+			
+			distraw = ir_2_getDist();
+			Str = itoa(distraw, buffer, 10);
+			BT_usart_transmit_message("Right: ");
+			BT_usart_transmit_message(Str);
+			BT_usart_transmit_message(newline);
+		} else{
+			BT_usart_transmit_message(message_errror);
+			BT_usart_transmit_message(newline);
+		}
 		
 		HAL_Delay(1000);
-//		
-		transmit(0x55);
-
-		bytes[0] = receive_char();
-
-		bytes[1] = receive_char();
-
-		dist = bytes[0]*256 + bytes[1];
-//		
-//		GetFrontDistance();
-    /* USER CODE END WHILE */
-		//text = BT_usart_receive_char();
-		//char echo[10] = {text, '\0'};
-		char distraw = dist;
-		char echo[10] = {distraw, '\0'};
-		BT_usart_transmit_message(echo);
-//		distStr = Itoa(dist, buffer, 10);
-//		BT_usart_transmit_message(distStr);
-//		BT_usart_transmit_message(newline);
-		
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -174,205 +184,90 @@ void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_HSI48;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_HSI14;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
+  RCC_OscInitStruct.HSI14State = RCC_HSI14_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL6;
-  RCC_OscInitStruct.PLL.PREDIV = RCC_PREDIV_DIV1;
+  RCC_OscInitStruct.HSI14CalibrationValue = 16;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
   }
-
   /** Initializes the CPU, AHB and APB buses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USB;
-  PeriphClkInit.UsbClockSelection = RCC_USBCLKSOURCE_HSI48;
-
-  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
   {
     Error_Handler();
   }
 }
 
 /**
-  * @brief I2C2 Initialization Function
+  * @brief ADC Initialization Function
   * @param None
   * @retval None
   */
-static void MX_I2C2_Init(void)
+static void MX_ADC_Init(void)
 {
 
-  /* USER CODE BEGIN I2C2_Init 0 */
+  /* USER CODE BEGIN ADC_Init 0 */
 
-  /* USER CODE END I2C2_Init 0 */
+  /* USER CODE END ADC_Init 0 */
 
-  /* USER CODE BEGIN I2C2_Init 1 */
+  ADC_ChannelConfTypeDef sConfig = {0};
 
-  /* USER CODE END I2C2_Init 1 */
-  hi2c2.Instance = I2C2;
-  hi2c2.Init.Timing = 0x20303E5D;
-  hi2c2.Init.OwnAddress1 = 0;
-  hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-  hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-  hi2c2.Init.OwnAddress2 = 0;
-  hi2c2.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
-  hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-  hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-  if (HAL_I2C_Init(&hi2c2) != HAL_OK)
+  /* USER CODE BEGIN ADC_Init 1 */
+
+  /* USER CODE END ADC_Init 1 */
+  /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
+  */
+  hadc.Instance = ADC1;
+  hadc.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
+  hadc.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc.Init.ScanConvMode = ADC_SCAN_DIRECTION_FORWARD;
+  hadc.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc.Init.LowPowerAutoWait = DISABLE;
+  hadc.Init.LowPowerAutoPowerOff = DISABLE;
+  hadc.Init.ContinuousConvMode = DISABLE;
+  hadc.Init.DiscontinuousConvMode = DISABLE;
+  hadc.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc.Init.DMAContinuousRequests = DISABLE;
+  hadc.Init.Overrun = ADC_OVR_DATA_PRESERVED;
+  if (HAL_ADC_Init(&hadc) != HAL_OK)
   {
     Error_Handler();
   }
-
-  /** Configure Analogue filter
+  /** Configure for the selected ADC regular channel to be converted.
   */
-  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c2, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  sConfig.Channel = ADC_CHANNEL_10;
+  sConfig.Rank = ADC_RANK_CHANNEL_NUMBER;
+  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  if (HAL_ADC_ConfigChannel(&hadc, &sConfig) != HAL_OK)
   {
     Error_Handler();
   }
-
-  /** Configure Digital filter
+  /** Configure for the selected ADC regular channel to be converted.
   */
-  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c2, 0) != HAL_OK)
+  sConfig.Channel = ADC_CHANNEL_11;
+  if (HAL_ADC_ConfigChannel(&hadc, &sConfig) != HAL_OK)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN I2C2_Init 2 */
+  /* USER CODE BEGIN ADC_Init 2 */
 
-  /* USER CODE END I2C2_Init 2 */
-
-}
-
-/**
-  * @brief SPI2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_SPI2_Init(void)
-{
-
-  /* USER CODE BEGIN SPI2_Init 0 */
-
-  /* USER CODE END SPI2_Init 0 */
-
-  /* USER CODE BEGIN SPI2_Init 1 */
-
-  /* USER CODE END SPI2_Init 1 */
-  /* SPI2 parameter configuration*/
-  hspi2.Instance = SPI2;
-  hspi2.Init.Mode = SPI_MODE_MASTER;
-  hspi2.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi2.Init.DataSize = SPI_DATASIZE_4BIT;
-  hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi2.Init.NSS = SPI_NSS_SOFT;
-  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
-  hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
-  hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
-  hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-  hspi2.Init.CRCPolynomial = 7;
-  hspi2.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
-  hspi2.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
-  if (HAL_SPI_Init(&hspi2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN SPI2_Init 2 */
-
-  /* USER CODE END SPI2_Init 2 */
-
-}
-
-/**
-  * @brief TSC Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TSC_Init(void)
-{
-
-  /* USER CODE BEGIN TSC_Init 0 */
-
-  /* USER CODE END TSC_Init 0 */
-
-  /* USER CODE BEGIN TSC_Init 1 */
-
-  /* USER CODE END TSC_Init 1 */
-
-  /** Configure the TSC peripheral
-  */
-  htsc.Instance = TSC;
-  htsc.Init.CTPulseHighLength = TSC_CTPH_2CYCLES;
-  htsc.Init.CTPulseLowLength = TSC_CTPL_2CYCLES;
-  htsc.Init.SpreadSpectrum = DISABLE;
-  htsc.Init.SpreadSpectrumDeviation = 1;
-  htsc.Init.SpreadSpectrumPrescaler = TSC_SS_PRESC_DIV1;
-  htsc.Init.PulseGeneratorPrescaler = TSC_PG_PRESC_DIV4;
-  htsc.Init.MaxCountValue = TSC_MCV_8191;
-  htsc.Init.IODefaultMode = TSC_IODEF_OUT_PP_LOW;
-  htsc.Init.SynchroPinPolarity = TSC_SYNC_POLARITY_FALLING;
-  htsc.Init.AcquisitionMode = TSC_ACQ_MODE_NORMAL;
-  htsc.Init.MaxCountInterrupt = DISABLE;
-  htsc.Init.ChannelIOs = TSC_GROUP1_IO3|TSC_GROUP2_IO3|TSC_GROUP3_IO2;
-  htsc.Init.ShieldIOs = 0;
-  htsc.Init.SamplingIOs = TSC_GROUP1_IO4|TSC_GROUP2_IO4|TSC_GROUP3_IO3;
-  if (HAL_TSC_Init(&htsc) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TSC_Init 2 */
-
-  /* USER CODE END TSC_Init 2 */
-
-}
-
-/**
-  * @brief USB Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USB_PCD_Init(void)
-{
-
-  /* USER CODE BEGIN USB_Init 0 */
-
-  /* USER CODE END USB_Init 0 */
-
-  /* USER CODE BEGIN USB_Init 1 */
-
-  /* USER CODE END USB_Init 1 */
-  hpcd_USB_FS.Instance = USB;
-  hpcd_USB_FS.Init.dev_endpoints = 8;
-  hpcd_USB_FS.Init.speed = PCD_SPEED_FULL;
-  hpcd_USB_FS.Init.phy_itface = PCD_PHY_EMBEDDED;
-  hpcd_USB_FS.Init.low_power_enable = DISABLE;
-  hpcd_USB_FS.Init.lpm_enable = DISABLE;
-  hpcd_USB_FS.Init.battery_charging_enable = DISABLE;
-  if (HAL_PCD_Init(&hpcd_USB_FS) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USB_Init 2 */
-
-  /* USER CODE END USB_Init 2 */
+  /* USER CODE END ADC_Init 2 */
 
 }
 
@@ -383,37 +278,9 @@ static void MX_USB_PCD_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, NCS_MEMS_SPI_Pin|EXT_RESET_Pin|LD3_Pin|LD6_Pin
-                          |LD4_Pin|LD5_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pins : NCS_MEMS_SPI_Pin EXT_RESET_Pin LD3_Pin LD6_Pin
-                           LD4_Pin LD5_Pin */
-  GPIO_InitStruct.Pin = NCS_MEMS_SPI_Pin|EXT_RESET_Pin|LD3_Pin|LD6_Pin
-                          |LD4_Pin|LD5_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : MEMS_INT1_Pin MEMS_INT2_Pin */
-  GPIO_InitStruct.Pin = MEMS_INT1_Pin|MEMS_INT2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : B1_Pin */
-  GPIO_InitStruct.Pin = B1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
 }
 
@@ -452,3 +319,4 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
+

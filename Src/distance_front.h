@@ -57,3 +57,6 @@ uint8_t receive_char(void);
 					 in front of the over given in mm. 
 */
 void GetFrontDistance(void);
+
+
+uint16_t Sonar_GetDistance(void);
