@@ -15,7 +15,7 @@ int main(void)
 		//RCC->AHBENR |= RCC_AHBENR_GPIOAEN;//enable DAC clock?
   	        GPIOC->MODER |= (3 << 0);//PC0 = ADC input to analog, no pull up/down (?default)
 		GPIOC->MODER |= (1 << 12) | (1 << 14) | (1 << 16) | (1 << 18);	//sets LED pins PC6-9  to General Purpose Output for ADC
-	        MX_ADC_Init(); //Initialize ADC. PC0 = ADC input (sensor middle pin, others to GND and 3V)
+	        MX_ADC_Init(); //Initialize ADC. PC0 = ADC input (sensor PIN 1). Connect sensor PIN 2 (middle) = GND, PIN 3 (VCC) to 3 or 5V.
 	 
 	        // ADC Calibration
 		ADC1->CR |= ADC_CR_ADDIS; //Set ADEN = 0;
@@ -31,12 +31,11 @@ int main(void)
 		
 		while (1)
 		{
-				if (ADC1->DR > 130) {GPIOC->ODR = (1 << 6);}//threshold of first LED 
-				else if (ADC1->DR <= 130) {GPIOC->ODR = (0 << 6);}
-				if (ADC1->DR > 173) {GPIOC->ODR = (1 << 8);}//threshold of second LED
-				if (ADC1->DR > 177) {GPIOC->ODR = (1 << 7);}//threshold of third LED
-				if (ADC1->DR > 177.5) {GPIOC->ODR = (1 << 9);}//threshold of fourth LED
-					
+				if (ADC1->DR > 130) {target_rpm = 100);}  //left_target_rpm or right_target_rpm depending on sensor side
+				else if (ADC1->DR <= 130) {target_rpm = 50);} //left_target_rpm or right_target_rpm
+				else if (ADC1->DR > 173) {target_rpm = 0;} //left_target_rpm or right_target_rpm
+				
+				
 												
 		}
   
