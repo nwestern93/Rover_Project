@@ -62,6 +62,21 @@ void left_encoder_init(void);
 void right_ADC_init(void);
 void left_ADC_init(void);
 
+//tells each individual motor to spin 
+//void left_forward(void);
+//void right_forward(void);
+
+//tells rover to go forward 
+void straight(void);
+
+//tells rover to turn left
+void turn_left(void);
+
+//tells rover to turn right
+void turn_right(void);
+
+//tells rover to stop
+void stop(void);
 
 #endif /* MOTOR_H_ */
 

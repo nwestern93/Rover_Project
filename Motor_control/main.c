@@ -77,7 +77,7 @@ void  button_init(void) {
  */
 volatile uint32_t right_encoder_count = 0;
 volatile uint32_t left_encoder_count = 0;
-
+int i = 0;
 int main(int argc, char* argv[]) {
 
     debouncer = 0;                          // Initialize global variables
@@ -92,9 +92,19 @@ int main(int argc, char* argv[]) {
         GPIOC->ODR ^= GPIO_ODR_8;           // Toggle green LED (heartbeat)
         right_encoder_count = TIM2->CNT;
 				left_encoder_count = TIM3->CNT;
-				HAL_Delay(128);                      // Delay 1/8 second
+				if(i ==0) {
+					turn_left();
+					i =1;
+				}
+				else if(i == 1) {
+					turn_left();
+					i = 2;
+				}
+				HAL_Delay(1280);                      // Delay 1/8 second
+			
     }
 }
 
 // ----------------------------------------------------------------------------
+
 
