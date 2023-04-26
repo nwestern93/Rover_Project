@@ -3,5 +3,6 @@
 
 void Error_Handler(void);
 
-int ir_1_getDist(void);
-int ir_2_getDist(void);
+int16_t ir_1_getDist(void);
+int16_t ir_2_getDist(void);
+void ir_getDist(void);
