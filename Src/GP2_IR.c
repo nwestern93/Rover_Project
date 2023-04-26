@@ -1,4 +1,4 @@
-#include "i3g_IR.h"
+#include "GP2_IR.h"
 
 int16_t  ir_1;
 int16_t	 ir_2;
