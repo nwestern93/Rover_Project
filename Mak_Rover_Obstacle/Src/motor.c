@@ -37,7 +37,7 @@ void right_motor_init(void) {
 }
 
 void left_pwm_init(void) {
-	  // Set up pin PA4 for H-bridge PWM output (TIMER 14 CH1)
+    // Set up pin PA4 for H-bridge PWM output (TIMER 14 CH1)                                      //PA4 = Left PWM (Speed)
     GPIOA->MODER |= (1 << 9);
     GPIOA->MODER &= ~(1 << 8);
 
@@ -45,11 +45,11 @@ void left_pwm_init(void) {
     GPIOA->AFR[0] &= 0xFFF0FFFF; // clear PA4 bits,
     GPIOA->AFR[0] |= (1 << 18);
 
-		// Set up a PA5, PA6 as GPIO output pins for motor direction control
+    // Set up a PA5, PA6 as GPIO output pins for motor direction control                      //PA5, PA6 = Left Direction Control
     GPIOA->MODER &= 0xFFFFC3FF; // clear PA5, PA6 bits,
     GPIOA->MODER |= (1 << 10) | (1 << 12);
     
-    //Initialize one direction pin to high, the other low
+    // Initialize one direction pin to high, the other low
     GPIOA->ODR |= (1 << 5);
     GPIOA->ODR &= ~(1 << 6);
 
@@ -70,13 +70,13 @@ void left_pwm_init(void) {
 
 }
 void right_pwm_init(void) {
-	  // Set up pin PA9 for H-bridge PWM output (TIMER1  CH2 )
+	  // Set up pin PA9 for H-bridge PWM output (TIMER1  CH2 )                                     //PA9 = Right PWM (Speed)
 		GPIOA -> MODER &= ~((1<<19) | (1<<18));
 		GPIOA -> MODER |= (1<<19);
 	
 		GPIOA -> AFR[1] |= (1<<5);
 
-    // Set up a PA10, PA11 as GPIO output pins for motor direction control
+    // Set up a PA10, PA11 as GPIO output pins for motor direction control                               //PA10, PA11 = Right Direction Control
     GPIOA->MODER &= ~((1<<23) | (1<<22) | (1<<21) | (1<<20)); // clear PA10, PA11 bits,
     GPIOA->MODER |= (1 << 22) | (1 << 20);
     
