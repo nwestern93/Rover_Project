@@ -10,8 +10,8 @@ volatile int16_t right_target_rpm = 20;    	// Desired speed target
 volatile int16_t right_motor_speed = 0;   	// Measured motor speed
 volatile int8_t right_adc_value = 0;      	// ADC measured motor current
 volatile int16_t right_error = 0;         	// Speed error signal
-volatile uint8_t right_Kp = 10;            	// Proportional gain
-volatile uint8_t right_Ki = 10;            	// Integral gain
+volatile uint8_t right_Kp = 30;            	// Proportional gain
+volatile uint8_t right_Ki = 30;            	// Integral gain
 
 volatile int16_t left_error_integral = 0;    // Integrated error signal
 volatile uint8_t left_duty_cycle = 0;    	// Output PWM duty cycle
@@ -19,8 +19,8 @@ volatile int16_t left_target_rpm = 20;    	// Desired speed target
 volatile int16_t left_motor_speed = 0;   	// Measured motor speed
 volatile int8_t left_adc_value = 0;      	// ADC measured motor current
 volatile int16_t left_error = 0;         	// Speed error signal
-volatile uint8_t left_Kp = 10;            	// Proportional gain
-volatile uint8_t left_Ki = 10;            	// Integral gain
+volatile uint8_t left_Kp = 30;            	// Proportional gain
+volatile uint8_t left_Ki = 30;            	// Integral gain
 
 void right_motor_init(void) {
     right_pwm_init();
@@ -463,3 +463,33 @@ void left_PI_update(void) {
         left_adc_value = ADC1->DR;       // Read the motor current for debug viewing
     }
 }
+
+void turn_left(void){
+	right_target_rpm = 20;
+	left_target_rpm = 0;
+	HAL_Delay(200);
+	right_target_rpm = 0;
+}
+void turn_right(void){
+	left_target_rpm = 20;
+	right_target_rpm = 0;
+	HAL_Delay(200);
+	left_target_rpm = 0;
+}
+
+//tells rover to go forward 
+void straight(void){
+	left_target_rpm = 50;
+	right_target_rpm = 50;
+}
+
+void stop(void) {
+	left_target_rpm = 0;
+	right_target_rpm = 0;
+}
+
+
+
+
+
+
