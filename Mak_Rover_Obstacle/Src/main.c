@@ -381,15 +381,13 @@ int main(void)
 		SystemClock_Config();
 		RCC->AHBENR |= RCC_APB2ENR_ADC1EN;//enable ADC1 in RCC
 		RCC->AHBENR |= RCC_AHBENR_GPIOCEN;//enable LED clock
-		//RCC->AHBENR |= RCC_AHBENR_GPIOAEN;//enable DAC clock?
-  	GPIOC->MODER |= (3 << 0);//PC0 = ADC input to analog, no pull up/down (?default)
-		GPIOC->MODER |= (1 << 12) | (1 << 14) | (1 << 16) | (1 << 18);	//sets LED pins PC6-9  to General Purpose Output for ADC
-	  MX_ADC_Init(); //Initialize ADC. PC0 = ADC input (potentiometer middle pin, others to GND and 3V)
+		GPIOC->MODER |= (3 << 0);//PC0 = ADC input to analog, no pull up/down (?default)
+	        MX_ADC_Init(); //Initialize ADC. PC0 = ADC input (sensor PIN 1). Connect sensor PIN 2 (middle) = GND, PIN 3 (VCC) to 3 or 5V.
 	 
-	  // ADC Calibration
+	        // ADC Calibration
 		ADC1->CR |= ADC_CR_ADDIS; //Set ADEN = 0;
 		//while ((ADC1->CR & ADC_CR_ADEN) != 0) {}
-	  ADC1->CFGR1 &= ~ADC_CFGR1_DMAEN; // Set DMAEN = 0
+	        ADC1->CFGR1 &= ~ADC_CFGR1_DMAEN; // Set DMAEN = 0
 		ADC1->CR |= ADC_CR_ADCAL; //Set ACAL = 1
 		while ((ADC1->CR & ADC_CR_ADCAL) != 0){} //Wait until ADCAL=0
 		ADC1->CR |= ADC_CR_ADEN; //Enable ADC
@@ -397,17 +395,12 @@ int main(void)
 		ADC1->CFGR1 |= ADC_CFGR1_CONT; //set ADC1 to continuous sampling, redundant with MX_ADC_Init()
 		HAL_ADC_Start(&hadc);  //START ADC CONVERSION
 
-		// Sine Wave: 8-bit, 32 samples/cycle
-		const uint8_t sine_table[32] = {127,151,175,197,216,232,244,251,254,251,244,232,216,197,175,151,127,102,78,56,37,21,9,2,0,2,9,21,37,56,78,102};	
-			uint8_t i = 0;
+		
 		while (1)
 		{
-				if (ADC1->DR > 130) {GPIOC->ODR = (1 << 6);}//threshold of first LED 
-				else if (ADC1->DR <= 130) {GPIOC->ODR = (0 << 6);}
-				if (ADC1->DR > 173) {GPIOC->ODR = (1 << 8);}//threshold of second LED
-				if (ADC1->DR > 177) {GPIOC->ODR = (1 << 7);}//threshold of third LED
-				if (ADC1->DR > 177.5) {GPIOC->ODR = (1 << 9);}//threshold of fourth LED
-					
+				if (ADC1->DR > 130) {target_rpm = 100);}  //left_target_rpm or right_target_rpm depending on sensor side
+				else if (ADC1->DR <= 130) {target_rpm = 50);} //left_target_rpm or right_target_rpm
+				else if (ADC1->DR > 173) {target_rpm = 0;} //left_target_rpm or right_target_rpm				
 												
 		}
   
