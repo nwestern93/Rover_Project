@@ -99,7 +99,7 @@ char* message_start = "start";
 	uint8_t bytes[2];
 	char buffer[20];
 	char* Str = "";
-	
+	int color = 0; // this variable only applies to constant polling of color (Drag race)
 	int a = 1253; 
 	int opCode = 0;
   /* Infinite loop */
@@ -109,7 +109,26 @@ char* message_start = "start";
     /* USER CODE END WHILE */
 		BT_usart_transmit_message(message_newCMD);
 		BT_usart_transmit_message(newline);
-		
+
+    // while (1) 
+    // {
+		//   // Color sensor polling - enable for Drag race - disable for Obstacle Course
+    //   color = getColor();
+    //   if (color > 6000)
+    //   {
+		// 		GPIOC->BRR = GPIO_PIN_8;
+		// 		GPIOC->BSRR = GPIO_PIN_9; // Light green
+    //   }
+    //   else if (color < 6000)
+    //   {
+		// 		GPIOC->BRR = GPIO_PIN_9;
+		// 		GPIOC->BSRR = GPIO_PIN_8; // Light orange
+    //     stop();
+    //   }
+
+    //   HAL_Delay(10); // read registers every 100 ms (default)
+    // }
+    
 		
 		opCode = BT_usart_receive_char();
 		
