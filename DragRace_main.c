@@ -46,7 +46,7 @@ int main(void)
     
      //set right motor to 100% forward
     
-    //if (direction of rover changes too fast to the left)     Use I2C GYRO?
+    //if (direction of rover changes too fast to the left)     Use I2C GYRO or NEO 6M GPS sensor?
     {
       //slow down right wheel until direction same as original
     }
