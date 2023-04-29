@@ -84,7 +84,7 @@ int main(void)
   /* USER CODE BEGIN SysInit */
 	USART3_Init();
 	BT_usart_init();
-	//LED_Init();
+	LED_Init();
   color_sensor_init();
 	right_motor_init();
 	left_motor_init();
