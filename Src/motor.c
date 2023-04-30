@@ -6,7 +6,7 @@
 
 volatile int16_t right_error_integral = 0;    // Integrated error signal
 volatile uint8_t right_duty_cycle = 0;    	// Output PWM duty cycle
-volatile int16_t right_target_rpm = 20;    	// Desired speed target
+volatile int16_t right_target_rpm = 0;    	// Desired speed target
 volatile int16_t right_motor_speed = 0;   	// Measured motor speed
 volatile int8_t right_adc_value = 0;      	// ADC measured motor current
 volatile int16_t right_error = 0;         	// Speed error signal
@@ -15,7 +15,7 @@ volatile uint8_t right_Ki = 30;            	// Integral gain
 
 volatile int16_t left_error_integral = 0;    // Integrated error signal
 volatile uint8_t left_duty_cycle = 0;    	// Output PWM duty cycle
-volatile int16_t left_target_rpm = 20;    	// Desired speed target
+volatile int16_t left_target_rpm = 0;    	// Desired speed target
 volatile int16_t left_motor_speed = 0;   	// Measured motor speed
 volatile int8_t left_adc_value = 0;      	// ADC measured motor current
 volatile int16_t left_error = 0;         	// Speed error signal
@@ -481,6 +481,8 @@ void turn_right(void){
 void straight(void){
 	left_target_rpm = 50;
 	right_target_rpm = 50;
+	//HAL_Delay(500);
+	//stop();
 }
 
 void stop(void) {

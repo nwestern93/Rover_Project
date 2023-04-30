@@ -58,7 +58,20 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
+void LED_Init(void){
+	RCC -> AHBENR |= RCC_AHBENR_GPIOCEN;
+	//Configuring red, blue, orange, and green LEDs to Output mode
+	GPIOC -> MODER &= ~((1<<19) | (1<<18) | (1<<17) | (1<<16) | (1<<15) | (1<<14) | (1<<13) | (1<<12));
+	GPIOC -> MODER |= (1<<18) | (1<<16) | (1<<14) | (1<<12);
 
+	//Setting red, blue, orange, and green LEDs to no pull up or pull down mode
+	GPIOC -> PUPDR &= ~((1<<19) | (1<<18) | (1<<17) | (1<<16) | (1<<15) | (1<<14) | (1<<13) | (1<<12));
+	
+	//Setting red, blue, orange, and green LEDs to low speed
+	GPIOC -> OSPEEDR &= ~((1<<19) | (1<<18) | (1<<17) |(1<<16) | (1<<15) | (1<<14) | (1<<13) | (1<<12));
+
+
+}
 /**
   * @brief  The application entry point.
   * @retval int
@@ -99,75 +112,84 @@ char* message_start = "start";
 	uint8_t bytes[2];
 	char buffer[20];
 	char* Str = "";
-	int color = 0; // this variable only applies to constant polling of color (Drag race)
+	
 	int a = 1253; 
 	int opCode = 0;
+	int color = 0; // this variable only applies to constant polling of color (Drag race)
+	
+	int stop_threshold = 710;
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+	BT_usart_transmit_message(message_newCMD);
+  BT_usart_transmit_message(newline);
+	straight();
+	GPIOC->BRR = GPIO_PIN_9;
+	GPIOC->BSRR = GPIO_PIN_8; // Light orange
   while (1)
   {
-    /* USER CODE END WHILE */
-		BT_usart_transmit_message(message_newCMD);
+		color = getColor();
+		Str = itoa(color, buffer, 10);
+		BT_usart_transmit_message(Str);
 		BT_usart_transmit_message(newline);
-
-    // while (1) 
-    // {
-		//   // Color sensor polling - enable for Drag race - disable for Obstacle Course
-    //   color = getColor();
-    //   if (color > 6000)
-    //   {
-		// 		GPIOC->BRR = GPIO_PIN_8;
-		// 		GPIOC->BSRR = GPIO_PIN_9; // Light green
-    //   }
-    //   else if (color < 6000)
-    //   {
-		// 		GPIOC->BRR = GPIO_PIN_9;
-		// 		GPIOC->BSRR = GPIO_PIN_8; // Light orange
-    //     stop();
-    //   }
-
-    //   HAL_Delay(10); // read registers every 100 ms (default)
-    // }
-    
-		
-		opCode = BT_usart_receive_char();
-		
-		if (opCode == '1'){ // Sonar Distance Sensor
-			int distraw=0;
-			distraw = Sonar_GetDistance();
-			Str = itoa(distraw, buffer, 10);
-			BT_usart_transmit_message(Str);
+    if (color > stop_threshold)
+    {
+			BT_usart_transmit_message("reached threshold");
 			BT_usart_transmit_message(newline);
-			
-		} else if (opCode == '2'){  // Color sensor 
-			int colorRaw=0;
-			colorRaw = getColor();
-			Str = itoa(colorRaw, buffer, 10);
-			BT_usart_transmit_message(Str);
-			BT_usart_transmit_message(newline);
-		
-		} else if (opCode == '3'){	//Ir sensor 1
+			GPIOC->BRR = GPIO_PIN_8;
+			GPIOC->BSRR = GPIO_PIN_9; // Light green
+			stop();
+   }
+
+//	HAL_Delay(10); // read registers every 100 ms (default)
+//    /* USER CODE END WHILE */
+//		BT_usart_transmit_message(message_newCMD);
+//		BT_usart_transmit_message(newline);
+//		
+//		
+//		opCode = BT_usart_receive_char();
+//		
+//		if (opCode == '1'){ // Sonar Distance Sensor
 //			int distraw=0;
-//			distraw = ir_1_getDist();
+//			distraw = Sonar_GetDistance();
 //			Str = itoa(distraw, buffer, 10);
-//			BT_usart_transmit_message("Left: ");
 //			BT_usart_transmit_message(Str);
 //			BT_usart_transmit_message(newline);
 //			
-//			distraw = ir_2_getDist();
-//			Str = itoa(distraw, buffer, 10);
-//			BT_usart_transmit_message("Right: ");
+//		} else if (opCode == '2'){  // Color sensor 
+//			int colorRaw=0;
+//			colorRaw = getColor();
+//			Str = itoa(colorRaw, buffer, 10);
 //			BT_usart_transmit_message(Str);
 //			BT_usart_transmit_message(newline);
-		} else if (opCode == '4'){ // motor commands start?
-			turn_left();
-		} else{
-			BT_usart_transmit_message(message_errror);
-			BT_usart_transmit_message(newline);
-		}
-		
-		HAL_Delay(1000);
-    /* USER CODE BEGIN 3 */
+//		
+//		} else if (opCode == '3'){	//Ir sensor 1
+////			int distraw=0;
+////			distraw = ir_1_getDist();
+////			Str = itoa(distraw, buffer, 10);
+////			BT_usart_transmit_message("Left: ");
+////			BT_usart_transmit_message(Str);
+////			BT_usart_transmit_message(newline);
+////			
+////			distraw = ir_2_getDist();
+////			Str = itoa(distraw, buffer, 10);
+////			BT_usart_transmit_message("Right: ");
+////			BT_usart_transmit_message(Str);
+////			BT_usart_transmit_message(newline);
+//		} else if (opCode == 'a'){ // motor commands start?
+//			turn_left();
+//		} else if (opCode == 'd'){ // motor commands start?
+//			turn_right();
+//		} else if (opCode == 'w'){ // motor commands start?
+//			straight();
+//		} else if (opCode == 's'){ // motor commands start?
+//			stop();
+//		} else{
+//			BT_usart_transmit_message(message_errror);
+//			BT_usart_transmit_message(newline);
+//		}
+//		
+//		HAL_Delay(1000);
+//    /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }
