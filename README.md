@@ -1,6 +1,7 @@
 # Rover_Project
 ECE6780 Group Project - Olivedrab
 Group Members:  Nick Western; Braden Brown; JT Herrmann; Dmitry Panin
+All code written in the C language (.c and .h designators)
 
 Overview:
 In this project built a rover capable of performing the following tasks:
@@ -22,7 +23,7 @@ stop or back up the rover in case of emergency.
 
 2. Our rover incorporated the following: GPIO, Interrupts, Timers, UART, I2C, Analog to Digital conversion (ADC), and PID control.
 
-Files have been provided within the SRC (source) folder for all of the on-board peripherals. We used two IR sensors, a color sensor, two 12 volt motors, a bluetooth transmitter, and an ultrasound sensor.
+Files have been provided within the SRC (source) folder for all of the on-board peripherals. We used two IR sensors, a color sensor, two 12 volt motors, a bluetooth transmitter, and an ultrasound sensor. A wiring diagram has been provided showing how the peripherals connect to the STM board and work with the provided code. 
 
 Instructions:
 
