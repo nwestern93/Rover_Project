@@ -20,27 +20,7 @@ uint8_t bytes[2];
 	INPUTS: None
 	OUTPUTS: None
 */
-/*
-void USART3_Init(void) {
-	//Configuring PB10 and PB11 to be in alternate mode
-	GPIOB -> MODER &= ~((1<<23) | (1<<22) | (1<<21) | (1<<20));
-	GPIOB -> MODER |= (1<<23) | (1<<21);
-	
-	//Configuring GPIOB AFR register
-	GPIOB -> AFR[1] |=   (0x04 << GPIO_AFRL_AFSEL1_Pos) | (0x04 <<GPIO_AFRL_AFSEL0_Pos);
-	//Setting USART3 Baud rate to 9600
-	USART3 -> BRR = HAL_RCC_GetHCLKFreq()/9600;
-	
-	//setting the DMAR bit in USART_CR3 register
-	USART3-> CR3 |= 1<<6;
-	
-	//Enabling Tx, Rx and the peripheral
-	USART3 -> CR1 |= (1<<0) | (1<<2) | (1<<3) | (1<<5) | (1<<7);
-	
-}
-*/
 
-////////BACKUP FUNCTION for if PB10,PB11,PC4,PC5 are needed for something else////////////////////
 
 void USART3_Init(void) {
 	
@@ -53,8 +33,8 @@ void USART3_Init(void) {
 	GPIOA -> MODER &= ~((1<<3) | (1<<2) | (1<<1) | (1<<0));
 	GPIOA -> MODER |= (1<<3) | (1<<1);
 	
-	//Configuring GPIOB AFR register
-	GPIOA -> AFR[0] |=   (0x04 << GPIO_AFRL_AFSEL1_Pos) | (0x04 <<GPIO_AFRL_AFSEL0_Pos);
+	//Configuring GPIOA AFR register
+	GPIOA -> AFR[0] |=   (1<<6) | (1<<2);
 
 	//Setting USART3 Baud rate to 9600
 	USART4 -> BRR = HAL_RCC_GetHCLKFreq()/9600;
@@ -69,26 +49,6 @@ void USART3_Init(void) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-/*////////BACKUP FUNCTION for if PB10,PB11,PA1,PA0  are needed for something else////////////////////
-void USART3_Init(void) {
-	//Configuring PC4 and PC5 to be in alternate mode
-	GPIOC -> MODER &= ~((1<<11) | (1<<10) | (1<<9) | (1<<8));
-	GPIOC -> MODER |= (1<<11) | (1<<9);
-	
-	//Configuring GPIOC AFR register
-	GPIOC -> AFR[0] |=   (0x01 << GPIO_AFRL_AFSEL5_Pos) | (0x01 <<GPIO_AFRL_AFSEL4_Pos);
-	//Setting USART3 Baud rate to 9600
-	USART3 -> BRR = HAL_RCC_GetHCLKFreq()/9600;
-	
-	//setting the DMAR bit in USART_CR3 register
-	USART3-> CR3 |= 1<<6;
-	
-	//Enabling Tx, Rx and the peripheral
-	USART3 -> CR1 |= (1<<0) | (1<<2) | (1<<3) | (1<<5) | (1<<7);
-	
-}
-*///////////////////////////////////////////////////////////
-	
 /*
 	This function transmits a given character on the
 	USART3 Tx pin.
@@ -195,10 +155,12 @@ uint16_t Sonar_GetDistance(void){
 	bytes[1] = receive_char();
 
 	
-	dist = (bytes[1]<<8) | bytes[0];
+	dist = (bytes[0]<<8) + bytes[1];
 	return dist;
 
 }
+
+
 	
 		
 
