@@ -1,3 +1,20 @@
+/* Supplemental information for understanding configuration of the color sensor
+ Each register needs to be ORed with 0x80 as the command register requires a 1 in front (i.e. 1000 0000)
+ enable_register = 0x00; // enable register
+ integration_register = 0x01; // timing register
+
+
+ 0x44 // address for TCS34725 (0x12 is ID register - read only)
+
+ 0x00 -> 0x03 // 0011 set enable register bit 1 to 1 (AEN) to enable and PON (Bit 0 to 1 enable) will begin RGBC cycle
+
+ Setting of integration time
+ 0x01 -> 0xD6; // 100ms integration time ATIME register (0x01)
+
+ Data for blue registers (read only)
+ 0x1A // 7:0 // Blue data low byte BDATA
+ 0x1B // 7:0 // Blue data high byte BDATAH
+*/
 
 #include "color_sensor_set.h"
 
