@@ -4,7 +4,7 @@
  integration_register = 0x01; // timing register
 
 
- 0x44 // address for TCS34725 (0x12 is ID register - read only)
+ 0x44 is the part number ID for TCS34725 (0x12 is ID register - read only)
 
  0x00 -> 0x03 // 0011 set enable register bit 1 to 1 (AEN) to enable and PON (Bit 0 to 1 enable) will begin RGBC cycle
 
