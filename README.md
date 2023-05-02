@@ -3,31 +3,24 @@ ECE6780 Group Project - Olivedrab
 Group Members:  Nick Western; Braden Brown; JT Herrmann; Dmitry Panin
 
 Overview:
-In this project we are building a rover with two tasks to complete:
+In this project built a rover capable of performing the following tasks:
 
-1. Obstacle Course- Our rover will need to navigate a course with objects placed as
-obstacles throughout. We will need to steer the rover through the course without
-striking the obstacles and without being able to see our rover.
+1. Obstacle Course- Our rover was able to navigate a course with objects placed as
+obstacles intended to be avoided. Our rover avoided these obstacles by having distances transmitted from
+several on-board sensors to a bluetooth USART interface from which we fed directional instructions to orient the rover away.
 
-2. Drag Race – Our rover will attempt to drive as fast as possible to a finish line and stop as
-close to the finish line as possible, again, without us being able to watch the rover while
-it drives.
-
+2. Drag Race – Our rover accelerated as quickly as possible to the finish line and stopped 
+autonomously just past the line of tape using a color sensor.
 
 In addition to the two tasks mentioned above; the obstacle course and the drag race, we also
-have to design our rover with the following constraints in mind:
+designed our rover with the following constraints in mind:
 
 1. Our only connection to our rover is a wireless USART or RS232. This may allow
 transmission of a low resolution visible spectrum camera (only 10x10 pixels) at a low
 frame rate of approximately 2fps to act as a backup to the autonomous capabilities and
 stop or back up the rover in case of emergency.
 
-2. Our rover must incorporate at least three topics we have covered in labs out of the
-following list: GPIO, Interrupts, Timers, UART, I2C, Analog, and PID.
-
-3. Because we are a graduate group we are required to use PID along with three other
-options.
-
+2. Our rover incorporated the following: GPIO, Interrupts, Timers, UART, I2C, Analog to Digital conversion (ADC), and PID control.
 
 Instructions:
 
