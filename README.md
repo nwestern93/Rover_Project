@@ -22,6 +22,8 @@ stop or back up the rover in case of emergency.
 
 2. Our rover incorporated the following: GPIO, Interrupts, Timers, UART, I2C, Analog to Digital conversion (ADC), and PID control.
 
+Files have been provided within the SRC (source) folder for all of the on-board peripherals. We used two IR sensors, a color sensor, two 12 volt motors, a bluetooth transmitter, and an ultrasound sensor.
+
 Instructions:
 
 To implement the Obstacle Course and Drag race codes it is recommended to download a cross
