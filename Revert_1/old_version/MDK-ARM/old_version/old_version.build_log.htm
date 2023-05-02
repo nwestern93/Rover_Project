@@ -1,0 +1,199 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: µVision V5.38.0.0
+Copyright (C) 2022 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Braden Brown, University of Utah, LIC=----
+ 
+Tool Versions:
+Toolchain:       MDK-Lite  Version: 5.38.0.0
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 7 (build 960)
+Assembler:       Armasm.exe V5.06 update 7 (build 960)
+Linker/Locator:  ArmLink.exe V5.06 update 7 (build 960)
+Library Manager: ArmAr.exe V5.06 update 7 (build 960)
+Hex Converter:   FromElf.exe V5.06 update 7 (build 960)
+CPU DLL:         SARMCM3.DLL V5.38.0.0
+Dialog DLL:      DARMCM1.DLL V1.19.6.0
+Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.1.0.0
+Dialog DLL:      TARMCM1.DLL V1.14.6.0
+ 
+<h2>Project:</h2>
+C:\Users\dadur\Documents\GitHub\Rover_Project\Revert_1\old_version\MDK-ARM\old_version.uvprojx
+Project File Date:  05/01/2023
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+Rebuild target 'old_version'
+assembling startup_stm32f072xb.s...
+compiling main.c...
+../Core/Inc/BT_usart.h(31): warning:  #1-D: last line of file ends without a newline
+  char* Itoa(int value, char* str, int radix);
+../Core/Src/main.c(47): error:  #20: identifier "SPI_HandleTypeDef" is undefined
+  SPI_HandleTypeDef hspi2;
+../Core/Src/main.c(49): error:  #20: identifier "TSC_HandleTypeDef" is undefined
+  TSC_HandleTypeDef htsc;
+../Core/Src/main.c(51): error:  #20: identifier "PCD_HandleTypeDef" is undefined
+  PCD_HandleTypeDef hpcd_USB_FS;
+../Core/Src/main.c(132): warning:  #177-D: variable "buffer"  was declared but never referenced
+  	char buffer[20];
+../Core/Src/main.c(133): warning:  #177-D: variable "distStr"  was declared but never referenced
+  	char* distStr = "";
+../Core/Src/main.c(135): warning:  #177-D: variable "a"  was declared but never referenced
+  	int a = 1253; 
+../Core/Src/main.c(281): error:  #20: identifier "SPI_MODE_MASTER" is undefined
+    hspi2.Init.Mode = SPI_MODE_MASTER;
+../Core/Src/main.c(282): error:  #20: identifier "SPI_DIRECTION_2LINES" is undefined
+    hspi2.Init.Direction = SPI_DIRECTION_2LINES;
+../Core/Src/main.c(283): error:  #20: identifier "SPI_DATASIZE_4BIT" is undefined
+    hspi2.Init.DataSize = SPI_DATASIZE_4BIT;
+../Core/Src/main.c(284): error:  #20: identifier "SPI_POLARITY_LOW" is undefined
+    hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
+../Core/Src/main.c(285): error:  #20: identifier "SPI_PHASE_1EDGE" is undefined
+    hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
+../Core/Src/main.c(286): error:  #20: identifier "SPI_NSS_SOFT" is undefined
+    hspi2.Init.NSS = SPI_NSS_SOFT;
+../Core/Src/main.c(287): error:  #20: identifier "SPI_BAUDRATEPRESCALER_4" is undefined
+    hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
+../Core/Src/main.c(288): error:  #20: identifier "SPI_FIRSTBIT_MSB" is undefined
+    hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
+../Core/Src/main.c(289): error:  #20: identifier "SPI_TIMODE_DISABLE" is undefined
+    hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
+../Core/Src/main.c(290): error:  #20: identifier "SPI_CRCCALCULATION_DISABLE" is undefined
+    hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+../Core/Src/main.c(292): error:  #20: identifier "SPI_CRC_LENGTH_DATASIZE" is undefined
+    hspi2.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
+../Core/Src/main.c(293): error:  #20: identifier "SPI_NSS_PULSE_ENABLE" is undefined
+    hspi2.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
+../Core/Src/main.c(294): warning:  #223-D: function "HAL_SPI_Init" declared implicitly
+    if (HAL_SPI_Init(&hspi2) != HAL_OK)
+../Core/Src/main.c(323): error:  #20: identifier "TSC_CTPH_2CYCLES" is undefined
+    htsc.Init.CTPulseHighLength = TSC_CTPH_2CYCLES;
+../Core/Src/main.c(324): error:  #20: identifier "TSC_CTPL_2CYCLES" is undefined
+    htsc.Init.CTPulseLowLength = TSC_CTPL_2CYCLES;
+../Core/Src/main.c(327): error:  #20: identifier "TSC_SS_PRESC_DIV1" is undefined
+    htsc.Init.SpreadSpectrumPrescaler = TSC_SS_PRESC_DIV1;
+../Core/Src/main.c(328): error:  #20: identifier "TSC_PG_PRESC_DIV4" is undefined
+    htsc.Init.PulseGeneratorPrescaler = TSC_PG_PRESC_DIV4;
+../Core/Src/main.c(329): error:  #20: identifier "TSC_MCV_8191" is undefined
+    htsc.Init.MaxCountValue = TSC_MCV_8191;
+../Core/Src/main.c(330): error:  #20: identifier "TSC_IODEF_OUT_PP_LOW" is undefined
+    htsc.Init.IODefaultMode = TSC_IODEF_OUT_PP_LOW;
+../Core/Src/main.c(331): error:  #20: identifier "TSC_SYNC_POLARITY_FALLING" is undefined
+    htsc.Init.SynchroPinPolarity = TSC_SYNC_POLARITY_FALLING;
+../Core/Src/main.c(332): error:  #20: identifier "TSC_ACQ_MODE_NORMAL" is undefined
+    htsc.Init.AcquisitionMode = TSC_ACQ_MODE_NORMAL;
+../Core/Src/main.c(334): error:  #20: identifier "TSC_GROUP1_IO3" is undefined
+    htsc.Init.ChannelIOs = TSC_GROUP1_IO3|TSC_GROUP2_IO3|TSC_GROUP3_IO2;
+../Core/Src/main.c(334): error:  #20: identifier "TSC_GROUP2_IO3" is undefined
+    htsc.Init.ChannelIOs = TSC_GROUP1_IO3|TSC_GROUP2_IO3|TSC_GROUP3_IO2;
+../Core/Src/main.c(334): error:  #20: identifier "TSC_GROUP3_IO2" is undefined
+    htsc.Init.ChannelIOs = TSC_GROUP1_IO3|TSC_GROUP2_IO3|TSC_GROUP3_IO2;
+../Core/Src/main.c(336): error:  #20: identifier "TSC_GROUP1_IO4" is undefined
+    htsc.Init.SamplingIOs = TSC_GROUP1_IO4|TSC_GROUP2_IO4|TSC_GROUP3_IO3;
+../Core/Src/main.c(336): error:  #20: identifier "TSC_GROUP2_IO4" is undefined
+    htsc.Init.SamplingIOs = TSC_GROUP1_IO4|TSC_GROUP2_IO4|TSC_GROUP3_IO3;
+../Core/Src/main.c(336): error:  #20: identifier "TSC_GROUP3_IO3" is undefined
+    htsc.Init.SamplingIOs = TSC_GROUP1_IO4|TSC_GROUP2_IO4|TSC_GROUP3_IO3;
+../Core/Src/main.c(337): warning:  #223-D: function "HAL_TSC_Init" declared implicitly
+    if (HAL_TSC_Init(&htsc) != HAL_OK)
+../Core/Src/main.c(364): error:  #20: identifier "PCD_SPEED_FULL" is undefined
+    hpcd_USB_FS.Init.speed = PCD_SPEED_FULL;
+../Core/Src/main.c: 6 warnings, 30 errors
+compiling stm32f0xx_hal_msp.c...
+../Core/Src/stm32f0xx_hal_msp.c(99): error:  #20: identifier "I2C2_SCL_Pin" is undefined
+      GPIO_InitStruct.Pin = I2C2_SCL_Pin|I2C2_SDA_Pin;
+../Core/Src/stm32f0xx_hal_msp.c(99): error:  #20: identifier "I2C2_SDA_Pin" is undefined
+      GPIO_InitStruct.Pin = I2C2_SCL_Pin|I2C2_SDA_Pin;
+../Core/Src/stm32f0xx_hal_msp.c(135): error:  #20: identifier "I2C2_SCL_GPIO_Port" is undefined
+      HAL_GPIO_DeInit(I2C2_SCL_GPIO_Port, I2C2_SCL_Pin);
+../Core/Src/stm32f0xx_hal_msp.c(135): error:  #20: identifier "I2C2_SCL_Pin" is undefined
+      HAL_GPIO_DeInit(I2C2_SCL_GPIO_Port, I2C2_SCL_Pin);
+../Core/Src/stm32f0xx_hal_msp.c(137): error:  #20: identifier "I2C2_SDA_GPIO_Port" is undefined
+      HAL_GPIO_DeInit(I2C2_SDA_GPIO_Port, I2C2_SDA_Pin);
+../Core/Src/stm32f0xx_hal_msp.c(137): error:  #20: identifier "I2C2_SDA_Pin" is undefined
+      HAL_GPIO_DeInit(I2C2_SDA_GPIO_Port, I2C2_SDA_Pin);
+../Core/Src/stm32f0xx_hal_msp.c(152): error:  #20: identifier "SPI_HandleTypeDef" is undefined
+  void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
+../Core/Src/stm32f0xx_hal_msp.c(169): error:  #20: identifier "SPI2_SCK_Pin" is undefined
+      GPIO_InitStruct.Pin = SPI2_SCK_Pin|SPI2_MISO_Pin|SPI2_MOSI_Pin;
+../Core/Src/stm32f0xx_hal_msp.c(169): error:  #20: identifier "SPI2_MISO_Pin" is undefined
+      GPIO_InitStruct.Pin = SPI2_SCK_Pin|SPI2_MISO_Pin|SPI2_MOSI_Pin;
+../Core/Src/stm32f0xx_hal_msp.c(169): error:  #20: identifier "SPI2_MOSI_Pin" is undefined
+      GPIO_InitStruct.Pin = SPI2_SCK_Pin|SPI2_MISO_Pin|SPI2_MOSI_Pin;
+../Core/Src/stm32f0xx_hal_msp.c(189): error:  #20: identifier "SPI_HandleTypeDef" is undefined
+  void HAL_SPI_MspDeInit(SPI_HandleTypeDef* hspi)
+../Core/Src/stm32f0xx_hal_msp.c(204): error:  #20: identifier "SPI2_SCK_Pin" is undefined
+      HAL_GPIO_DeInit(GPIOB, SPI2_SCK_Pin|SPI2_MISO_Pin|SPI2_MOSI_Pin);
+../Core/Src/stm32f0xx_hal_msp.c(204): error:  #20: identifier "SPI2_MISO_Pin" is undefined
+      HAL_GPIO_DeInit(GPIOB, SPI2_SCK_Pin|SPI2_MISO_Pin|SPI2_MOSI_Pin);
+../Core/Src/stm32f0xx_hal_msp.c(204): error:  #20: identifier "SPI2_MOSI_Pin" is undefined
+      HAL_GPIO_DeInit(GPIOB, SPI2_SCK_Pin|SPI2_MISO_Pin|SPI2_MOSI_Pin);
+../Core/Src/stm32f0xx_hal_msp.c(219): error:  #20: identifier "TSC_HandleTypeDef" is undefined
+  void HAL_TSC_MspInit(TSC_HandleTypeDef* htsc)
+../Core/Src/stm32f0xx_hal_msp.c(281): error:  #20: identifier "TSC_HandleTypeDef" is undefined
+  void HAL_TSC_MspDeInit(TSC_HandleTypeDef* htsc)
+../Core/Src/stm32f0xx_hal_msp.c(316): error:  #20: identifier "PCD_HandleTypeDef" is undefined
+  void HAL_PCD_MspInit(PCD_HandleTypeDef* hpcd)
+../Core/Src/stm32f0xx_hal_msp.c(338): error:  #20: identifier "PCD_HandleTypeDef" is undefined
+  void HAL_PCD_MspDeInit(PCD_HandleTypeDef* hpcd)
+../Core/Src/stm32f0xx_hal_msp.c(356): warning:  #1-D: last line of file ends without a newline
+  /* USER CODE END 1 */
+../Core/Src/stm32f0xx_hal_msp.c: 1 warning, 18 errors
+compiling stm32f0xx_it.c...
+../Core/Src/stm32f0xx_it.c(145): warning:  #1-D: last line of file ends without a newline
+  /* USER CODE END 1 */
+../Core/Src/stm32f0xx_it.c: 1 warning, 0 errors
+compiling stm32f0xx_hal_tim.c...
+compiling distance_front.c...
+compiling BT_usart.c...
+../Core/Inc/BT_usart.h(31): warning:  #1-D: last line of file ends without a newline
+  char* Itoa(int value, char* str, int radix);
+BT_usart.c(94): warning:  #1-D: last line of file ends without a newline
+  }
+BT_usart.c: 2 warnings, 0 errors
+compiling stm32f0xx_hal_tim_ex.c...
+compiling stm32f0xx_hal_rcc_ex.c...
+compiling stm32f0xx_hal_rcc.c...
+compiling stm32f0xx_hal.c...
+compiling stm32f0xx_hal_i2c_ex.c...
+compiling stm32f0xx_hal_i2c.c...
+compiling stm32f0xx_hal_gpio.c...
+compiling stm32f0xx_hal_dma.c...
+compiling stm32f0xx_hal_cortex.c...
+compiling stm32f0xx_hal_pwr.c...
+compiling stm32f0xx_hal_pwr_ex.c...
+compiling stm32f0xx_hal_flash.c...
+compiling stm32f0xx_hal_exti.c...
+compiling stm32f0xx_hal_flash_ex.c...
+compiling system_stm32f0xx.c...
+"old_version\old_version.axf" - 48 Error(s), 10 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.9.0.pack
+                ARM.CMSIS.5.9.0
+                CMSIS (Common Microcontroller Software Interface Standard)
+   * Component: CORE Version: 5.6.0
+
+Package Vendor: Keil
+                https://www.keil.com/pack/Keil.STM32F0xx_DFP.2.1.1.pack
+                Keil.STM32F0xx_DFP.2.1.1
+                STMicroelectronics STM32F0 Series Device Support, Drivers and Examples
+
+<h2>Collection of Component include folders:</h2>
+  ./RTE/_old_version
+  C:/Users/dadur/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include
+  C:/Users/dadur/AppData/Local/Arm/Packs/Keil/STM32F0xx_DFP/2.1.1/Drivers/CMSIS/Device/ST/STM32F0xx/Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:5.6.0
+Target not created.
+Build Time Elapsed:  00:00:26
+</pre>
+</body>
+</html>

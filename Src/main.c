@@ -1,4 +1,3 @@
-/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file           : main.c
@@ -15,7 +14,7 @@
   *
   ******************************************************************************
   */
-/* USER CODE END Header */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "distance_front.h"
@@ -23,41 +22,8 @@
 #include "color_sensor_set.h"
 #include "motor.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
-
-/* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-/* USER CODE BEGIN PFP */
 
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
 void LED_Init(void){
 	RCC -> AHBENR |= RCC_AHBENR_GPIOCEN;
 	//Configuring red, blue, orange, and green LEDs to Output mode
@@ -69,45 +35,31 @@ void LED_Init(void){
 	
 	//Setting red, blue, orange, and green LEDs to low speed
 	GPIOC -> OSPEEDR &= ~((1<<19) | (1<<18) | (1<<17) |(1<<16) | (1<<15) | (1<<14) | (1<<13) | (1<<12));
-
-
 }
-/**
-  * @brief  The application entry point.
-  * @retval int
-  */
+
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
 
-  /* USER CODE END 1 */
-
-  /* MCU Configuration--------------------------------------------------------*/
-
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
-  /* USER CODE BEGIN Init */
 
-  /* USER CODE END Init */
-
-  /* Configure the system clock */
   SystemClock_Config();
 
-  /* USER CODE BEGIN SysInit */
 	USART3_Init();
-//	BT_usart_init();
+  BT_usart_init();
 	LED_Init();
- // color_sensor_init();
+  color_sensor_init();
 	right_motor_init();
 	left_motor_init();
-  /* USER CODE END SysInit */
-char* message_start = "start";
+
+	char* message_start = "start";
 	char* message_errror = "Error";
 	char* message_newCMD = "New Command:";
 	char* newline = "\n";
-//	BT_usart_transmit_message(message_start);
-//	BT_usart_transmit_message(newline);
+	
+	BT_usart_transmit_message(message_start);
+	BT_usart_transmit_message(newline);
+	
 	int dist = 0;
 	uint8_t bytes[2];
 	char buffer[20];
@@ -118,18 +70,19 @@ char* message_start = "start";
 	int color = 0; // this variable only applies to constant polling of color (Drag race)
 	
 	int stop_threshold = 3000;
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-//	BT_usart_transmit_message(message_newCMD);
-//  BT_usart_transmit_message(newline);
+
+	BT_usart_transmit_message(message_newCMD);
+  BT_usart_transmit_message(newline);
 //	straight();
 //	GPIOC->BRR = GPIO_PIN_9;
 //	GPIOC->BSRR = GPIO_PIN_8; // Light orange
 
-	int16_t val1 = get_1();
-	int16_t val2 = get_2();
+	//int16_t val1 = get_1();
+	//int16_t val2 = get_2();
   while (1)
   {
+ /*
+************************************DRAG RACE CODE*******************************************		
 		color = getColor();
 		Str = itoa(color, buffer, 10);
 		BT_usart_transmit_message(Str);
@@ -142,59 +95,63 @@ char* message_start = "start";
 			GPIOC->BSRR = GPIO_PIN_9; // Light green
 			stop();
    }
+***************************************************************************************
 
 //	HAL_Delay(10); // read registers every 100 ms (default)
-//    /* USER CODE END WHILE */
-//		BT_usart_transmit_message(message_newCMD);
-//		BT_usart_transmit_message(newline);
-//		
-//		
-//		opCode = BT_usart_receive_char();
-//		
-//		if (opCode == '1'){ // Sonar Distance Sensor
-//			int distraw=0;
-//			distraw = Sonar_GetDistance();
-//			Str = itoa(distraw, buffer, 10);
-//			BT_usart_transmit_message(Str);
-//			BT_usart_transmit_message(newline);
-//			
-//		} else if (opCode == '2'){  // Color sensor 
-//			int colorRaw=0;
-//			colorRaw = getColor();
-//			Str = itoa(colorRaw, buffer, 10);
-//			BT_usart_transmit_message(Str);
-//			BT_usart_transmit_message(newline);
-//		
-//		} else if (opCode == '3'){	//Ir sensor 1
-////			int distraw=0;
-////			distraw = ir_1_getDist();
-////			Str = itoa(distraw, buffer, 10);
-////			BT_usart_transmit_message("Left: ");
-////			BT_usart_transmit_message(Str);
-////			BT_usart_transmit_message(newline);
-////			
-////			distraw = ir_2_getDist();
-////			Str = itoa(distraw, buffer, 10);
-////			BT_usart_transmit_message("Right: ");
-////			BT_usart_transmit_message(Str);
-////			BT_usart_transmit_message(newline);
-//		} else if (opCode == 'a'){ // motor commands start?
-//			turn_left();
-//		} else if (opCode == 'd'){ // motor commands start?
-//			turn_right();
-//		} else if (opCode == 'w'){ // motor commands start?
-//			straight();
-//		} else if (opCode == 's'){ // motor commands start?
-//			stop();
-//		} else{
-//			BT_usart_transmit_message(message_errror);
-//			BT_usart_transmit_message(newline);
-//		}
-//		
-//		HAL_Delay(1000);
-//    /* USER CODE BEGIN 3 */
+
+*/
+
+
+		BT_usart_transmit_message(message_newCMD);
+		BT_usart_transmit_message(newline);
+		
+		
+		opCode = BT_usart_receive_char();
+		
+		if (opCode == '1'){ // Sonar Distance Sensor
+			int distraw=0;
+			distraw = Sonar_GetDistance();
+			Str = itoa(distraw, buffer, 10);
+			BT_usart_transmit_message(Str);
+			BT_usart_transmit_message(newline);
+			
+		} else if (opCode == '2'){  // Color sensor 
+			int colorRaw=0;
+			colorRaw = getColor();
+			Str = itoa(colorRaw, buffer, 10);
+			BT_usart_transmit_message(Str);
+			BT_usart_transmit_message(newline);
+		
+		} else if (opCode == '3'){	//Ir sensor 1
+			int distraw=0;
+			//distraw = ir_1_getDist();
+			//Str = itoa(distraw, buffer, 10);
+			BT_usart_transmit_message("Left: ");
+			BT_usart_transmit_message(Str);
+			BT_usart_transmit_message(newline);
+			
+			//distraw = ir_2_getDist();
+			//Str = itoa(distraw, buffer, 10);
+			BT_usart_transmit_message("Right: ");
+			BT_usart_transmit_message(Str);
+			BT_usart_transmit_message(newline);
+		} else if (opCode == 'a'){ // motor commands start?
+			turn_left();
+		} else if (opCode == 'd'){ // motor commands start?
+			turn_right();
+		} else if (opCode == 'w'){ // motor commands start?
+			straight();
+		} else if (opCode == 's'){ // motor commands start?
+			stop();
+		} else{
+			BT_usart_transmit_message(message_errror);
+			BT_usart_transmit_message(newline);
+		}
+		
+		HAL_Delay(1000);
+
   }
-  /* USER CODE END 3 */
+
 }
 
 /**

@@ -36,7 +36,7 @@ void RCC_Init(void) {
 	//Enabling USARTS on RCC
 	//RCC -> APB2ENR |= RCC_APB2ENR_USART1EN;
 	//RCC -> APB1ENR |= RCC_APB1ENR_USART2EN;
-	//RCC -> APB1ENR |= RCC_APB1ENR_USART3EN;
+	RCC -> APB1ENR |= RCC_APB1ENR_USART3EN;
 	RCC -> APB1ENR |= RCC_APB1ENR_USART4EN;
 
 }
@@ -68,7 +68,6 @@ int main(void)
 
 	USART3_Init();
 	
-	init_usart3();
 	
   while (1)
   {
