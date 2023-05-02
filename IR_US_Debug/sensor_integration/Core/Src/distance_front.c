@@ -155,7 +155,7 @@ uint16_t Sonar_GetDistance(void){
 	bytes[1] = receive_char();
 
 	
-	dist = (bytes[1]<<8) | bytes[0];
+	dist = (bytes[0]<<8) + bytes[1];
 	return dist;
 
 }

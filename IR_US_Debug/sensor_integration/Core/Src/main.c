@@ -153,15 +153,15 @@ int main(void)
 		
 		} else if (opCode == '3'){	//Ir sensor 1
 			int distraw=0;
-			Str = itoa(distraw, buffer, 10);
+			//Str = itoa(distraw, buffer, 10);
 			BT_usart_transmit_message("Left: ");
-			BT_usart_transmit_message(Str);
+			//BT_usart_transmit_message(Str);
 			BT_usart_transmit_message(newline);
 			
-			distraw = ir_2_getDist();
-			Str = itoa(distraw, buffer, 10);
+			//distraw = ir_2_getDist();
+			//Str = itoa(distraw, buffer, 10);
 			BT_usart_transmit_message("Right: ");
-			BT_usart_transmit_message(Str);
+			//BT_usart_transmit_message(Str);
 			BT_usart_transmit_message(newline);
 		} else{
 			BT_usart_transmit_message(message_errror);
