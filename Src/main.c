@@ -96,9 +96,9 @@ int main(void)
 
   /* USER CODE BEGIN SysInit */
 	USART3_Init();
-	BT_usart_init();
+//	BT_usart_init();
 	LED_Init();
-  color_sensor_init();
+ // color_sensor_init();
 	right_motor_init();
 	left_motor_init();
   /* USER CODE END SysInit */
@@ -106,8 +106,8 @@ char* message_start = "start";
 	char* message_errror = "Error";
 	char* message_newCMD = "New Command:";
 	char* newline = "\n";
-	BT_usart_transmit_message(message_start);
-	BT_usart_transmit_message(newline);
+//	BT_usart_transmit_message(message_start);
+//	BT_usart_transmit_message(newline);
 	int dist = 0;
 	uint8_t bytes[2];
 	char buffer[20];
@@ -117,14 +117,17 @@ char* message_start = "start";
 	int opCode = 0;
 	int color = 0; // this variable only applies to constant polling of color (Drag race)
 	
-	int stop_threshold = 710;
+	int stop_threshold = 3000;
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	BT_usart_transmit_message(message_newCMD);
-  BT_usart_transmit_message(newline);
-	straight();
-	GPIOC->BRR = GPIO_PIN_9;
-	GPIOC->BSRR = GPIO_PIN_8; // Light orange
+//	BT_usart_transmit_message(message_newCMD);
+//  BT_usart_transmit_message(newline);
+//	straight();
+//	GPIOC->BRR = GPIO_PIN_9;
+//	GPIOC->BSRR = GPIO_PIN_8; // Light orange
+
+	int16_t val1 = get_1();
+	int16_t val2 = get_2();
   while (1)
   {
 		color = getColor();
