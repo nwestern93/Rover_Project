@@ -20,9 +20,9 @@
 
 
 static uint8_t slave_address = 0x29; // slave address of color sensor
-static uint8_t enable_address = 0x80;// sensor address for enable (0x00) + the 1 in front for the command register (1000 0000) ORed with 0x80
+static uint8_t enable_address = 0x81;// sensor address for enable (0x00) + the 1 in front for the command register (1000 0000) ORed with 0x80
 static uint8_t timing_address = 0x81;// sensor address for timing
-static uint8_t enable_value = 0x03;// what we want enable register to be to enable PON and AEN
+static uint8_t enable_value = 0x00;// what we want enable register to be to enable PON and AEN
 static uint8_t timing_value = 0x00;// what we want enable register to be (corresponds with integration time of 614ms)
 static uint8_t blue_data_low_address = 0x9A; // X data registers (read both registers in same transaction) ORed with 0x80
 static uint8_t blue_data_high_address = 0x9B; // Y data registers (read both registers in same transaction) ORed with 0x80

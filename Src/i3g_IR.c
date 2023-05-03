@@ -59,16 +59,21 @@ void ADC_Disable(void){
 }
 
 void ir_1_init(void){
+	ADC_Disable();
+	//ADC_Enable();
 	
+	RCC->APB2ENR |= RCC_APB2ENR_ADCEN;//enable ADC1 in RCC
+	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+	RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
 	
-	RCC->AHBENR |= RCC_APB2ENR_ADC1EN;//enable ADC1 in RCC
+	GPIOA->MODER |= (0x3<<6); // PA3
 	GPIOC->MODER |= (0xFF << 0);//PC0 = ADC input to analog, no pull up/down (?default)
 	//GPIOC->MODER |= (3 << 2);//PC1
 	//MX_ADC_Init(); //Initialize ADC. PC0 = ADC input (potentiometer middle pin, others to GND and 3V)
   // Set 8-bit resolution
   ADC1->CFGR1 |= (1 << 4);
 	  // Turn off hardware triggers
-  ADC1->CFGR1 &= ~((1 << 10) | (1 << 12));
+  ADC1->CFGR1 &= ~((1 << 10) | (1 << 11));
 //	ADC1->CFGR1 &= ~ADC_CFGR1_DMAEN; // Set DMAEN = 0
 //	ADC1->CHSELR |= (1<<10); //set ADC1 to channel 10, redundant with MX_ADC_Init()
 //	ADC1->CHSELR |= (1<<11);
@@ -77,7 +82,7 @@ void ir_1_init(void){
 	calibration();
 
   ADC1->CHSELR |= (1<<10); //set ADC1 to channel 10, redundant with MX_ADC_Init()
-	ADC1->CHSELR |= (1<<12);
+	ADC1->CHSELR |= (1<<3);
     
   // Ensure ADSTP, ADSTART, ADDIS are = 0
   ADC1->CR &= ~(1 << 4); //STP
@@ -90,14 +95,7 @@ void ir_1_init(void){
 	ADC1->CR |= ADC_CR_ADEN; //Enable ADC
 }
 
-void ir_getDist(void){
-	while((ADC1->ISR & ADC_ISR_EOC) != 1);
-	ir_1 = ADC1->DR;
-	while((ADC1->ISR & ADC_ISR_EOC) != 1);
-	ir_2 = ADC1->DR;
-}
-
-int16_t* ir_1_getDist(void){
+int16_t ir_getDist2(void){
 	
 	static int16_t val[2];
 		/* (1) Select HSI14 by writing 00 in CKMODE (reset value) */
@@ -107,59 +105,9 @@ int16_t* ir_1_getDist(void){
 	/* (4) Wake-up the VREFINT (only for VBAT, Temp sensor and VRefInt) */
 	//ADC1->CFGR2 &= ~ADC_CFGR2_CKMODE; /* (1) */
 	//ADC1->CFGR1 |= ADC_CFGR1_CONT | ADC_CFGR1_SCANDIR;
-	ADC1->CHSELR = ADC_CHSELR_CHSEL10 |  ADC_CHSELR_CHSEL11; /* (2) */
-	ADC1->SMPR |= ADC_SMPR_SMP_0 | ADC_SMPR_SMP_1 | ADC_SMPR_SMP_2; /* (3) */
+	ADC1->CHSELR = ADC_CHSELR_CHSEL10 |  ADC_CHSELR_CHSEL3; /* (2) */
+	ADC1->SMPR = ADC_SMPR_SMP_0 | ADC_SMPR_SMP_1 | ADC_SMPR_SMP_2; /* (3) */
 	ADC->CCR |= ADC_CCR_VREFEN; /* (4) */
-		/* Performs the AD conversion */
-	ADC1->CR |= ADC_CR_ADSTART; /* Start the ADC conversion  */
-	for(int16_t i=0; i <2; i++){
-		while ((ADC1->ISR & ADC_ISR_EOC) == 0) /* Wait end of conversion */
-		{
-		/* For robust implementation, add here time-out management */
-		}
-		val[i] = (int16_t)ADC1->DR; /* Store the ADC conversion result */
-	}
-	//ADC1->CFGR1 ^= ADC_CFGR1_SCANDIR; /* Toggle the scan direction */
-	return val;
-}
-
-int16_t ir_2_getDist(void){
-
-	static int16_t val = 0;
-		/* (1) Select HSI14 by writing 00 in CKMODE (reset value) */
-	/* (2) Select CHSEL0, CHSEL9, CHSEL10 andCHSEL17 for VRefInt */
-	/* (3) Select a sampling mode of 111 i.e. 239.5 ADC clk to be greater
-	than 17.1us */
-	/* (4) Wake-up the VREFINT (only for VBAT, Temp sensor and VRefInt) */
-	//ADC1->CFGR2 &= ~ADC_CFGR2_CKMODE; /* (1) */
-	ADC1->CHSELR = ADC_CHSELR_CHSEL11; /* (2) */
-	ADC1->SMPR |= ADC_SMPR_SMP_0 | ADC_SMPR_SMP_1 | ADC_SMPR_SMP_2; /* (3) */
-	ADC->CCR |= ADC_CCR_VREFEN; /* (4) */
-		/* Performs the AD conversion */
-	ADC1->CR |= ADC_CR_ADSTART; /* Start the ADC conversion */
-	while ((ADC1->ISR & ADC_ISR_EOC) == 0) /* Wait end of conversion */
-	{
-	/* For robust implementation, add here time-out management */
-	}
-	val = ADC1->DR; /* Store the ADC conversion result */
-	ADC1->CFGR1 ^= ADC_CFGR1_SCANDIR; /* Toggle the scan direction */
-	return val;
-}
-
-
-void ir_getDist2(void){
-	
-	static int16_t val[2];
-		/* (1) Select HSI14 by writing 00 in CKMODE (reset value) */
-	/* (2) Select CHSEL0, CHSEL9, CHSEL10 andCHSEL17 for VRefInt */
-	/* (3) Select a sampling mode of 111 i.e. 239.5 ADC clk to be greater
-	than 17.1us */
-	/* (4) Wake-up the VREFINT (only for VBAT, Temp sensor and VRefInt) */
-	//ADC1->CFGR2 &= ~ADC_CFGR2_CKMODE; /* (1) */
-	//ADC1->CFGR1 |= ADC_CFGR1_CONT | ADC_CFGR1_SCANDIR;
-	ADC1->CHSELR = ADC_CHSELR_CHSEL10 |  ADC_CHSELR_CHSEL12; /* (2) */
-	//ADC1->SMPR |= ADC_SMPR_SMP_0 | ADC_SMPR_SMP_1 | ADC_SMPR_SMP_2; /* (3) */
-	//ADC->CCR |= ADC_CCR_VREFEN; /* (4) */
 	
 	//ADC1->CFGR1 |= ADC_CFGR1_SCANDIR;
 	
@@ -172,17 +120,19 @@ void ir_getDist2(void){
 		}
 		val[i] = (int16_t)ADC1->DR; /* Store the ADC conversion result */
 	}
-	//ADC1->CFGR1 ^= ADC_CFGR1_SCANDIR; /* Toggle the scan direction */
-	ir_1 = val[0];
-	ir_2 = val[1];
-	return;
+	ADC1->CFGR1 ^= ADC_CFGR1_SCANDIR; /* Toggle the scan direction */
+//	ir_1 = val[0];
+//	ir_2 = val[1];
+	return val[0];
 }
 
 int16_t get_1(void){
-	ir_getDist2();
-	return ir_1;
+	//ADC1->SMPR = ADC_SMPR_SMP_2;
+	return ir_getDist2();
+	//return ir_1;
 }
 int16_t get_2(void){
-	ir_getDist2();
-	return ir_2;
+	//ADC1->SMPR = ADC_SMPR_SMP_0 | ADC_SMPR_SMP_1 | ADC_SMPR_SMP_2;
+	return ir_getDist2();
+	//return ir_2;
 }

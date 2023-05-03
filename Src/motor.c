@@ -366,8 +366,6 @@ void turn_right(void){
 void straight(void){
 	left_target_rpm = 50;
 	right_target_rpm = 50;
-	HAL_Delay(200);
-	stop();
 }
 
 void stop(void) {
