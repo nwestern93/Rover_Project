@@ -1,8 +1,8 @@
 /* Supplemental information for understanding configuration of the color sensor
+ 
  Each register needs to be ORed with 0x80 as the command register requires a 1 in front (i.e. 1000 0000)
  enable_register = 0x00; // enable register
  integration_register = 0x01; // timing register
-
 
  0x44 is the part number ID for TCS34725 (0x12 is ID register - read only)
 
@@ -14,16 +14,18 @@
  Data for blue registers (read only)
  0x1A // 7:0 // Blue data low byte BDATA
  0x1B // 7:0 // Blue data high byte BDATAH
+ The blue data is concatenated as a 16 bit value (2 bytes) and the threshold value is determined relative
+ to a baseline color
 */
 
 #include "color_sensor_set.h"
 
 
 static uint8_t slave_address = 0x29; // slave address of color sensor
-static uint8_t enable_address = 0x81;// sensor address for enable (0x00) + the 1 in front for the command register (1000 0000) ORed with 0x80
+static uint8_t enable_address = 0x80;// sensor address for enable (0x00) + the 1 in front for the command register (1000 0000) ORed with 0x80
 static uint8_t timing_address = 0x81;// sensor address for timing
-static uint8_t enable_value = 0x00;// what we want enable register to be to enable PON and AEN
-static uint8_t timing_value = 0x00;// what we want enable register to be (corresponds with integration time of 614ms)
+static uint8_t enable_value = 0x03;// what we want enable register to be to enable PON and AEN (0000 0011)
+static uint8_t timing_value = 0x00;// what we want enable register to be (corresponds with integration time of 614ms) [0xFF is 2.4 ms]
 static uint8_t blue_data_low_address = 0x9A; // X data registers (read both registers in same transaction) ORed with 0x80
 static uint8_t blue_data_high_address = 0x9B; // Y data registers (read both registers in same transaction) ORed with 0x80
 
