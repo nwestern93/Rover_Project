@@ -8,7 +8,8 @@ In this project built a rover capable of performing the following tasks:
 
 1. Obstacle Course- Our rover was able to navigate a course with objects placed as
 obstacles intended to be avoided. Our rover avoided these obstacles by having distances transmitted from
-several on-board sensors to a bluetooth USART interface from which we fed directional instructions to orient the rover away.
+several on-board sensors to a bluetooth USART interface from which we fed directional instructions (WASD) 
+to orient the rover towards an unobstructed path.
 
 2. Drag Race – Our rover accelerated as quickly as possible to the finish line and stopped 
 autonomously just past the line of tape using a color sensor.
