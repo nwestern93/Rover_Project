@@ -54,8 +54,12 @@ On successful bootup in the BT Serial Terminal you should see the word "Start". 
 4. Automous Drive mode - untested and unused.  
 
 ## Additional Documents and links:
+
 Pin Mapping: https://docs.google.com/document/d/18roIChLPl2zdtpu9mFGXQAJIOC7Tzi_BBI56ADnR7Jg/edit?usp=sharing
+
 Online Electrical Wiring Diagram: https://virtual-graph-paper.com/index.html?edit=9a84729d4476
+
 Demonstration Videos: https://drive.google.com/drive/folders/1nOP6aPW4H-RzOcj3__ERbeMvrUVF-qXq?usp=sharing
+
 Final project Writeup: https://drive.google.com/file/d/165fWnYH-OEV6ZvXJfqCc-TxmHb8OZUnj/view?usp=sharing
 
