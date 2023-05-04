@@ -52,3 +52,10 @@ On successful bootup in the BT Serial Terminal you should see the word "Start". 
 2. Drag Race Mode - This mode turns on both motors, Then it will check the color sensor until it senses the line then it will stop. The color threshold to stop needs to be set at compilation. 
 3. Manual Drive Mode- This mode is to drive for the obstical course. Every loop it will query each of the sensors and output them to the BT serial Terminal. Then it will wait for a 'w', 'a', 'd'. 'w' will go straight for 5000 miliseconds. 'a' and 'd' will turn left and right by 45 degrees. 
 4. Automous Drive mode - untested and unused.  
+
+## Additional Documents and links:
+Pin Mapping: https://docs.google.com/document/d/18roIChLPl2zdtpu9mFGXQAJIOC7Tzi_BBI56ADnR7Jg/edit?usp=sharing
+Online Electrical Wiring Diagram: https://virtual-graph-paper.com/index.html?edit=9a84729d4476
+Demonstration Videos: https://drive.google.com/drive/folders/1nOP6aPW4H-RzOcj3__ERbeMvrUVF-qXq?usp=sharing
+Final project Writeup: https://drive.google.com/file/d/165fWnYH-OEV6ZvXJfqCc-TxmHb8OZUnj/view?usp=sharing
+
