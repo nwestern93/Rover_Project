@@ -9,7 +9,7 @@ void BT_usart_init(void){
 	//set mode to Alternate function
 	GPIOC->MODER |= (0x2 << 10) | (0x2 << 8);
 	//Set AFR to AF1
-  GPIOC->AFR[0] = (0x1 << 20) | (0x1 << 16);
+        GPIOC->AFR[0] = (0x1 << 20) | (0x1 << 16);
 	
 	//ENABLE USART3
 	RCC->APB1ENR |= RCC_APB1ENR_USART3EN; 
@@ -71,7 +71,7 @@ void BT_usart_transmit_message(char* message){
 //    char t = *x; *x = *y; *y = t;
 //}
 // 
-//// Function to reverse `buffer[i…j]`
+//// Function to reverse `buffer[iâ€¦j]`
 //char* reverse(char *buffer, int i, int j)
 //{
 //    while (i < j) {
